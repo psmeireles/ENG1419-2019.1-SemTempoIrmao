@@ -5,5 +5,9 @@ app = Flask(__name__)
 def start_game():
     return "Bem-vindo!"
 
+@app.route("/clock")
+def clock():
+    return "Time is running!"
+
 
 app.run(port=5000, debug=False)

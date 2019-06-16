@@ -1,35 +1,39 @@
-#include <GFButton.h>
-#include <TimerOne.h>
+#include "definitions.h"
+#include "modules.h"
 
-GFButton button1(A1);
+// void button1Pressed() {
+// 	Serial.println("Timer restarted!");
+// 	Timer1.restart();
+// }
 
-void button1Pressed(){
-    Serial.println("Timer restarted!");
-    Timer1.restart();
-}
-
-void timerExpired(){
-    Serial.println("BOOM!");
-    Timer1.stop();
-}
+// void timerExpired() {
+// 	Serial.println("BOOM!");
+// 	Timer1.stop();
+// }
 
 void setup() {
-  Serial.begin(9600);
-  Serial.setTimeout(10);
-  
+	Serial.begin(9600);
+	Serial.setTimeout(10);
+	pinMode(A1, INPUT);
 }
 
 void loop() {
-  String text = Serial.readString();
-  text.trim();
+	String text = Serial.readString();
+	text.trim();
 
-  button1.process();
+	//button1.process();
 
-    if(text.startsWith("countdown")){
-        int seconds = text.substring(10).toInt();
-        Serial.println("Initiating countdown! " + String(seconds) + " seconds");
-        Timer1.initialize(seconds * 1000000);
-        Timer1.attachInterrupt(timerExpired); 
-        button1.setPressHandler(button1Pressed);
-    }
+	if (text.startsWith("countdown")) {
+		int seconds = text.substring(10).toInt();
+		Serial.println("Initializing countdown! " + String(seconds) + " seconds");
+		initializeCountdown(seconds, -1);
+	}
+
+	for(int i = 0; i < processes.size(); i++) {
+		Process *proc = processes.get(i);
+		bool terminate = proc->action(proc);
+		if(terminate){
+			processes.remove(i);
+		}
+	}
 }

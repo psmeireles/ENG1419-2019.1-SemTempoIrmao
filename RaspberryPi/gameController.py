@@ -1,3 +1,5 @@
+
+
 class gameController:
     def module1(self):
         print("This is the first module.")
@@ -7,3 +9,16 @@ class gameController:
 
     def module3(self):
         print("This is the third module.")
+
+#comecou o jogo
+
+#computador
+
+#computador envia requisição pro raspberry
+
+#chamou pela rota
+#monta fase (pre definida ou gerada aleatoriamente)
+#string que sera encaminhada para o arduino
+
+#countdown (retirar do shield com display de 7 segmentos para a página web)
+#raspberry pi - sensores de distancia e luminosidade

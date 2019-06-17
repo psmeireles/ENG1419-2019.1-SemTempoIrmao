@@ -1,13 +1,16 @@
 from flask import Flask
+from modules.countdown import CountdownModule
+from gameController import GameController
 
 app = Flask(__name__)
 
 @app.route("/")
 def start_game():
     return "Bem-vindo!"
-    gc = gameController()
-    gc.module1()
-    gc.module2()
-    gc.module3()
+    gc = GameController(3, 180)
+    
+    gc.initModule(CountdownModule(True, 10, -1, "Countdown"))
+    print(gc.modules)
 
 app.run(port=5000, debug=False)
+

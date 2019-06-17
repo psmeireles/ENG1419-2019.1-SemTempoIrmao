@@ -1,24 +1,25 @@
+from serial import Serial
 
+class GameController:
 
-class gameController:
-    def module1(self):
-        print("This is the first module.")
+    def __init__(self, lives, timeInSeconds):
+        self.lives = lives
+        self.time = timeInSeconds
+        self.tasks = {}
+        self.serial = Serial("/dev/serial0", baudrate=9600, timeout=0.01)
+        self.modules = []
 
-    def module2(self):
-        print("This is the second module.")
+    @staticmethod
+    def sendMessageToArduino(self, msg):
+        self.serial.write(msg.encode("UTF-8"))
 
-    def module3(self):
-        print("This is the third module.")
+    def getMessageFromArduino(self):
+        msg = self.serial.readline()
+        if msg != "":
+            msg = msg.decode().strip()
+            print(msg)
+            
 
-#comecou o jogo
-
-#computador
-
-#computador envia requisição pro raspberry
-
-#chamou pela rota
-#monta fase (pre definida ou gerada aleatoriamente)
-#string que sera encaminhada para o arduino
-
-#countdown (retirar do shield com display de 7 segmentos para a página web)
-#raspberry pi - sensores de distancia e luminosidade
+    def initModule(self, module):
+        module.init()
+        self.modules.append(module)

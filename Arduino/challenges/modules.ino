@@ -1,10 +1,17 @@
 #include "modules.h"
 #include "definitions.h"
 #include <Math.h>
+#include <Ultrasonic.h>
 
 #define PIN_A 5
 #define PIN_B 2.5
 #define PIN_C 0
+
+#define PTRIGGER 4
+#define PECHO 5
+
+Ultrasonic ultrasonic(PTRIGGER, PECHO);
+
 
 
 void hit() { // This function will be called each time the player fails a challenge
@@ -48,10 +55,10 @@ bool processWires(Process *proc) {
   if (proc->duration != -1 && (now - proc->startTime) / 1000 >= proc->duration) {
     // Process is over
     bool result = checkWires(proc);
-    if(result){
+    if (result) {
       Serial.print("finished wires");
     }
-    else{
+    else {
       hit();
     }
     return true;
@@ -59,11 +66,11 @@ bool processWires(Process *proc) {
 
   if (digitalRead(A3) == LOW) {
     bool result = checkWires(proc);
-    if(result){
+    if (result) {
       Serial.print("finished wires");
       return true;
     }
-    else{
+    else {
       hit();
     }
   }
@@ -72,15 +79,15 @@ bool processWires(Process *proc) {
 }
 
 bool checkWires(Process *proc) {
-  float pinReads[] = {analogRead(A8)*5/1024.0, analogRead(A9)*5/1024.0, analogRead(A10)*5/1024.0};
+  float pinReads[] = {analogRead(A8) * 5 / 1024.0, analogRead(A9) * 5 / 1024.0, analogRead(A10) * 5 / 1024.0};
   int pinA = proc->params[0];
   int pinB = proc->params[1];
   int pinC = proc->params[2];
 
-  if (abs(pinReads[pinA-1] - PIN_A) < 1.5
-      && abs(pinReads[pinB-1] - PIN_B) < 1.5
-      && abs(pinReads[pinC-1] - PIN_C) < 1.5) {
-        return true;
+  if (abs(pinReads[pinA - 1] - PIN_A) < 1.5
+      && abs(pinReads[pinB - 1] - PIN_B) < 1.5
+      && abs(pinReads[pinC - 1] - PIN_C) < 1.5) {
+    return true;
   }
 
   return false;
@@ -92,10 +99,52 @@ void initializeWires(int pinA, int pinB, int pinC, int duration) {
   wiresProc->lastInteraction = wiresProc->startTime;
   wiresProc->interval = -1;
   wiresProc->duration = duration;
-  wiresProc->params = (int *) malloc(3*sizeof(int));
+  wiresProc->params = (int *) malloc(3 * sizeof(int));
   wiresProc->params[0] = pinA;
   wiresProc->params[1] = pinB;
   wiresProc->params[2] = pinC;
   wiresProc->action = processWires;
   processes.add(wiresProc);
+}
+
+bool processDistance(Process *proc) {
+  unsigned long now = millis();
+
+  // 5 seconds tolerance to start checking
+  if (proc->startTime < now) {
+    float cmMsec;
+    //long microsec = ultrasonic.timing();
+    cmMsec = ultrasonic.read();
+    Serial.println(cmMsec);
+    Serial.println(proc->params[0]);
+    Serial.println(proc->params[1]);
+    Serial.println(cmMsec);
+    if (cmMsec > proc->params[1] || cmMsec < proc->params[0]) {
+      hit();
+      return true;
+    }
+  }
+  else{
+    return false;
+  }
+  
+  if (proc->duration != -1 && (now - proc->startTime) / 1000 >= proc->duration) {
+    Serial.println("finished distance");
+    return true;
+  }
+
+  return false;
+}
+
+void initializeDistance(int minDist, int maxDist, int duration) {
+  Process *distProc = (Process*) malloc(sizeof(Process));
+  distProc->startTime = millis() + 5000;
+  distProc->lastInteraction = distProc->startTime;
+  distProc->interval = -1;
+  distProc->duration = duration;
+  distProc->params = (int *) malloc(2 * sizeof(int));
+  distProc->params[0] = minDist;
+  distProc->params[1] = maxDist;
+  distProc->action = processDistance;
+  processes.add(distProc);
 }

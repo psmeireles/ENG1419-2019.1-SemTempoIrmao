@@ -39,6 +39,13 @@ void loop() {
     int duration = text.substring(12,14).toInt();
     initializeWires(pinA, pinB, pinC, duration);
   }
+  else if (text.startsWith("distance")) {
+    int minDist = text.substring(9,11).toInt();
+    int maxDist = text.substring(12,14).toInt();
+    int duration = text.substring(15).toInt();
+    initializeDistance(minDist, maxDist, duration);
+  }
+  
 
   for (int i = 0; i < processes.size(); i++) {
     Process *proc = processes.get(i);

@@ -10,6 +10,8 @@
 #define PTRIGGER 4
 #define PECHO 5
 
+int lightSensor = A0;
+
 Ultrasonic ultrasonic(PTRIGGER, PECHO);
 
 
@@ -113,21 +115,16 @@ bool processDistance(Process *proc) {
   // 5 seconds tolerance to start checking
   if (proc->startTime < now) {
     float cmMsec;
-    //long microsec = ultrasonic.timing();
     cmMsec = ultrasonic.read();
-    Serial.println(cmMsec);
-    Serial.println(proc->params[0]);
-    Serial.println(proc->params[1]);
-    Serial.println(cmMsec);
     if (cmMsec > proc->params[1] || cmMsec < proc->params[0]) {
       hit();
       return true;
     }
   }
-  else{
+  else {
     return false;
   }
-  
+
   if (proc->duration != -1 && (now - proc->startTime) / 1000 >= proc->duration) {
     Serial.println("finished distance");
     return true;
@@ -147,4 +144,41 @@ void initializeDistance(int minDist, int maxDist, int duration) {
   distProc->params[1] = maxDist;
   distProc->action = processDistance;
   processes.add(distProc);
+}
+
+
+bool processLight(Process *proc) {
+  unsigned long now = millis();
+
+  // 5 seconds tolerance to start checking
+  if (proc->startTime < now) {
+    int lightValue = analogRead(lightSensor);
+    if (lightValue > proc->params[1] || lightValue < proc->params[0]) {
+      hit();
+      return true;
+    }
+  }
+  else {
+    return false;
+  }
+
+  if (proc->duration != -1 && (now - proc->startTime) / 1000 >= proc->duration) {
+    Serial.println("finished light");
+    return true;
+  }
+
+  return false;
+}
+
+void initializeLight(int minLight, int maxLight, int duration) {
+  Process *lightProc = (Process*) malloc(sizeof(Process));
+  lightProc->startTime = millis() + 5000;
+  lightProc->lastInteraction = lightProc->startTime;
+  lightProc->interval = -1;
+  lightProc->duration = duration;
+  lightProc->params = (int *) malloc(2 * sizeof(int));
+  lightProc->params[0] = minLight;
+  lightProc->params[1] = maxLight;
+  lightProc->action = processLight;
+  processes.add(lightProc);
 }

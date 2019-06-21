@@ -45,6 +45,12 @@ void loop() {
     int duration = text.substring(15).toInt();
     initializeDistance(minDist, maxDist, duration);
   }
+  else if (text.startsWith("light")) {
+    int minLight = text.substring(6,10).toInt();
+    int maxLight = text.substring(11,15).toInt();
+    int duration = text.substring(16).toInt();
+    initializeLight(minLight, maxLight, duration);
+  }
   
 
   for (int i = 0; i < processes.size(); i++) {

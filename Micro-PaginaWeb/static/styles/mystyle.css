@@ -1,0 +1,8 @@
+@font-face { font-family: AlarmClock; src: url('alarmclock.ttf'); }
+@font-face { font-family: Logo; src: url('Bombing.ttf'); } 
+@font-face { font-family: Game; src: url('Endgame.otf'); } 
+h3,h2,h4
+{
+    color: white;
+    font-family: Game;
+  }

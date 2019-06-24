@@ -42,9 +42,13 @@ def newPeriodicChallenge():
 
 #Evento que informa que o player nao cumpriu um dos desafios periodicos.Pagina usa essa informaçao para decrementar uma vida do player.
 #Deve enviar: Numero do desafio que nao foi realizado (inteiro entre 0 e numDesafiosPeriodicos-1) 
-@socketio.on('missedPeriodicChallenge')
-def missedPeriodicChallenge():
-    emit("missedPeriodicChallenge",0)
+@socketio.on('correctPeriodicChallenge')
+def correctPeriodicChallenge():
+    emit("correctPeriodicChallenge","1 true")
+
+@socketio.on('loseLife')
+def loseLife():
+    emit("loseLife","")
 
 #Evento que informa o fim do jogo. Ao receber esse evento, a pagina para o timer e exibe uma mensagem de vitoria/derrota
 #Deve enviar: True se venceu o jogo ou False se perdeu (bool)
@@ -54,6 +58,6 @@ def gameOver():
 
 
 if __name__ == '__main__':
-    app.run(port=3000)
+    app.run(port=5000)
 
 

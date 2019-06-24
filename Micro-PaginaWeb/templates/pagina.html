@@ -57,12 +57,13 @@
 
 
 		<!--BOTOES PARA DEBUGGAR SOCKET -->
-		<button onclick="socketStart()">Click me</button>
-		<button onclick="socketNewFixedChallenge()">Click me</button>
-		<button onclick="socketCorrectFixedChallenge()">Click me</button>
-		<button onclick="socketNewPeriodicChallenge()">Click me</button>
-		<button onclick="socketMissedPeriodicChallenge()">Click me</button>
-		<button onclick="socketGameOver()">Click me</button>
+		<button onclick="socketStart()">socketStart</button>
+		<button onclick="socketNewFixedChallenge()">socketNewFixedChallenge</button>
+		<button onclick="socketCorrectFixedChallenge()">socketCorrectFixedChallenge</button>
+		<button onclick="socketNewPeriodicChallenge()">socketNewPeriodicChallenge</button>
+		<button onclick="socketCorrectPeriodicChallenge()">socketCorrectPeriodicChallenge</button>
+		<button onclick="socketLoseLife()">socketLoseLife(</button>
+		<button onclick="socketGameOver()">socketGameOver</button>
 
     <!-- <button onclick="comecaTimer()">Click me</button> -->
 		<footer>
@@ -102,9 +103,14 @@
 				}
 				);
 
-				socket.on('missedPeriodicChallenge',function(data)
+				socket.on('correctPeriodicChallenge',function(data)
 				{
-					missedPeriodicChallenge(data);
+					console.log(data) 
+					//data = data.toString(); 
+					console.log(typeof(data)) 
+					data = data.split(" ");
+					console.log(data)
+					correctPeriodicChallenge(data[0],data[1]);
 				}
 				);
 
@@ -114,9 +120,9 @@
 				}
 				);
 				
-				socket.on('correctFixedChallenge2',function(data)
+				socket.on('loseLife',function()
 				{
-					correctFixedChallenge(data);
+					loseLife();
 				}
 				);
 
@@ -142,9 +148,14 @@
     				socket.emit('newPeriodicChallenge');
 				}
 
-				function socketMissedPeriodicChallenge()
+				function socketCorrectPeriodicChallenge()
 				{
-    				socket.emit('missedPeriodicChallenge');
+    				socket.emit('correctPeriodicChallenge');
+				}
+				
+				function socketLoseLife()
+				{
+    				socket.emit('loseLife');
 				}
 
 				function socketGameOver()
@@ -152,8 +163,6 @@
     				socket.emit('gameOver');
 				}
 
-				
-			  
 				// setInterval(function()
 				// {
 				// 	socket.emit("leitura","tem?")

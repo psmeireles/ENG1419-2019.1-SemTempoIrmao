@@ -56,7 +56,6 @@ function correctFixedChallenge(isCorrect)
     if(!isCorrect)
     {
         challenge.style.color="red";
-        loseLife();
     }
     else
     {	
@@ -71,18 +70,15 @@ function correctFixedChallenge(isCorrect)
 
 
 
-function missedPeriodicChallenge(numChallenge)
+function correctPeriodicChallenge(numChallenge,isCorrect)
 {
-    var missedChallenge = document.getElementById("periodicChallengeId"+ String(numChallenge));
-    missedChallenge.style.color="red";
-    loseLife();
-    setTimeout
-    (
-        function()
-        {
-            missedChallenge.style.color="white";		
-        }
-    ,4000);
+	console.log(numChallenge);
+	console.log(isCorrect);
+    var periodicChallenge = document.getElementById("periodicChallengeId"+ String(numChallenge));
+	if(isCorrect)
+		periodicChallenge.style.color="red";
+	else if(!isCorrect)
+		periodicChallenge.style.color="green";
 }
 
 function loseLife()

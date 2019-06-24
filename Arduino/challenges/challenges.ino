@@ -1,24 +1,9 @@
 #include "definitions.h"
 #include "modules.h"
 
-// void button1Pressed() {
-// 	Serial.println("Timer restarted!");
-// 	Timer1.restart();
-// }
-
-// void timerExpired() {
-// 	Serial.println("BOOM!");
-// 	Timer1.stop();
-// }
-
 void setup() {
   Serial.begin(9600);
   Serial.setTimeout(10);
-  pinMode(A1, INPUT);
-  pinMode(A3, INPUT);
-  pinMode(A8, INPUT);
-  pinMode(A9, INPUT);
-  pinMode(A10, INPUT);
 }
 
 void loop() {
@@ -28,9 +13,9 @@ void loop() {
   //button1.process();
 
   if (text.startsWith("countdown")) {
-    int seconds = text.substring(10).toInt();
-    Serial.println("Initializing countdown! " + String(seconds) + " seconds");
-    initializeCountdown(seconds, -1);
+    int seconds = text.substring(10, 12).toInt();
+    int duration = text.substring(13).toInt();
+    initializeCountdown(seconds, duration);
   }
   else if (text.startsWith("wires")) {
     int pinA = text.substring(6,7).toInt();
@@ -50,6 +35,16 @@ void loop() {
     int maxLight = text.substring(11,15).toInt();
     int duration = text.substring(16).toInt();
     initializeLight(minLight, maxLight, duration);
+  }
+  else if (text.startsWith("genius")) {
+    int sequence[5];
+    sequence[0] = text.substring(7,8).toInt() - 1;
+    sequence[1] = text.substring(9,10).toInt() - 1;
+    sequence[2] = text.substring(11,12).toInt() - 1;
+    sequence[3] = text.substring(13,14).toInt() - 1;
+    sequence[4] = text.substring(15, 16).toInt() - 1;
+    int lightInterval = text.substring(17).toInt();
+    initializeGenius(sequence, lightInterval);
   }
   
 

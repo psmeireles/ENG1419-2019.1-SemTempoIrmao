@@ -7,12 +7,7 @@
 #define PIN_B 2.5
 #define PIN_C 0
 
-#define PTRIGGER 4
-#define PECHO 5
-
-int lightSensor = A0;
-
-Ultrasonic ultrasonic(PTRIGGER, PECHO);
+Ultrasonic ultrasonic(US_TRIGGER_PIN, US_ECHO_PIN);
 
 
 
@@ -66,7 +61,7 @@ bool processWires(Process *proc) {
     return true;
   }
 
-  if (digitalRead(A3) == LOW) {
+  if (digitalRead(WIRES_BTN) == HIGH) {
     bool result = checkWires(proc);
     if (result) {
       Serial.print("finished wires");
@@ -81,7 +76,7 @@ bool processWires(Process *proc) {
 }
 
 bool checkWires(Process *proc) {
-  float pinReads[] = {analogRead(A8) * 5 / 1024.0, analogRead(A9) * 5 / 1024.0, analogRead(A10) * 5 / 1024.0};
+  float pinReads[] = {analogRead(WIRES_1) * 5 / 1024.0, analogRead(WIRES_2) * 5 / 1024.0, analogRead(WIRES_3) * 5 / 1024.0};
   int pinA = proc->params[0];
   int pinB = proc->params[1];
   int pinC = proc->params[2];
@@ -152,7 +147,7 @@ bool processLight(Process *proc) {
 
   // 5 seconds tolerance to start checking
   if (proc->startTime < now) {
-    int lightValue = analogRead(lightSensor);
+    int lightValue = analogRead(LIGHT_PIN);
     if (lightValue > proc->params[1] || lightValue < proc->params[0]) {
       hit();
       return true;
@@ -181,4 +176,91 @@ void initializeLight(int minLight, int maxLight, int duration) {
   lightProc->params[1] = maxLight;
   lightProc->action = processLight;
   processes.add(lightProc);
+}
+
+bool processGenius(Process *proc) {
+  unsigned long now = millis();
+  int colors[3] = {LED_R, LED_Y, LED_G};
+
+  // Blinking LEDS
+  if (((now - proc->startTime)) % proc->interval < 10 && proc->params[6] != 5) {
+    int ledIndex = proc->params[6];
+    digitalWrite(colors[0], LOW);
+    digitalWrite(colors[1], LOW);
+    digitalWrite(colors[2], LOW);
+    digitalWrite(colors[proc->params[ledIndex]], HIGH);
+    Serial.println("Acendeu o " + String(colors[proc->params[ledIndex]]));
+    proc->params[6]++; 
+  }
+
+  //Checking buttons
+  if((now - proc->startTime) > 5*proc->interval && (now - proc->lastInteraction) >= 500){
+    int btnR = digitalRead(BTN_R);
+    int btnY = digitalRead(BTN_Y);
+    int btnG = digitalRead(BTN_G);
+
+    int currIndex = proc->params[5];
+
+    
+    if (btnR == HIGH){
+      proc->lastInteraction = millis();
+      if (proc->params[currIndex] == 0){
+        proc->params[5]++;
+      }
+      else{
+        proc->params[5] = 0;
+        proc->params[6] = 0; 
+        proc->startTime = millis();
+        hit();
+      }
+    }
+    else if (btnY == HIGH){
+      proc->lastInteraction = millis();
+      if (proc->params[currIndex] == 1){
+        proc->params[5]++;
+      }
+      else{
+        proc->params[5] = 0;
+        proc->params[6] = 0; 
+        proc->startTime = millis();
+        hit();
+      }
+    }
+    else if (btnG == HIGH){
+      proc->lastInteraction = millis();
+      if (proc->params[currIndex] == 2){
+        proc->params[5]++;
+      }
+      else{
+        proc->params[5] = 0;
+        proc->params[6] = 0; 
+        proc->startTime = millis();
+        hit();
+      }
+    }
+  }
+
+  if(proc->params[5] == 5){
+    Serial.println("finished genius");
+    return true;
+  }
+  return false;
+}
+
+void initializeGenius(int sequence[5], int lightInterval) {
+  Process *geniusProc = (Process*) malloc(sizeof(Process));
+  geniusProc->startTime = millis();
+  geniusProc->lastInteraction = geniusProc->startTime;
+  geniusProc->interval = lightInterval;
+  geniusProc->duration = -1;
+  geniusProc->params = (int *) malloc(7 * sizeof(int));
+  geniusProc->params[0] = sequence[0];
+  geniusProc->params[1] = sequence[1];
+  geniusProc->params[2] = sequence[2];
+  geniusProc->params[3] = sequence[3];
+  geniusProc->params[4] = sequence[4];
+  geniusProc->params[5] = 0;  // Current button to be pressed
+  geniusProc->params[6] = 0;  // Current LED to blink
+  geniusProc->action = processGenius;
+  processes.add(geniusProc);
 }

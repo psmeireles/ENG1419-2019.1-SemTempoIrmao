@@ -2,6 +2,10 @@
 #define _DEFINITIONS_H
 
 #include <LinkedList.h>
+#include <Adafruit_GFX.h>
+#include <MCUFRIEND_kbv.h>
+#include <TouchScreen.h>
+#include <JKSButton.h> 
 
 #define LIGHT_PIN A14
 #define US_ECHO_PIN 41
@@ -27,5 +31,8 @@ struct Process{
 };
 
 LinkedList<Process*> processes;
+TouchScreen touch(6, A1, A2, 7, 300); 
+MCUFRIEND_kbv tft;
+JKSButton button; 
 
 #endif

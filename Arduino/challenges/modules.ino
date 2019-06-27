@@ -9,7 +9,7 @@
 
 Ultrasonic ultrasonic(US_TRIGGER_PIN, US_ECHO_PIN);
 
-
+Process *countdown;
 
 void hit() { // This function will be called each time the player fails a challenge
   Serial.println("hit");
@@ -20,6 +20,7 @@ bool processCountdown(Process *proc) {
 
   if (proc->duration != -1 && (now - proc->startTime) / 1000 >= proc->duration) {
     // Process is over
+    Serial.println("finished countdown");
     return true;
   }
 
@@ -28,13 +29,15 @@ bool processCountdown(Process *proc) {
     hit();
     return true;
   }
-  else if (digitalRead(A1) == LOW) {
-    proc->lastInteraction = now;
-  }
 
+  button.init(&tft, &touch, 120, 70, 200, 100, TFT_WHITE, TFT_PURPLE,
+TFT_BLACK, &String((now - proc->lastInteraction) / 1000)[0], 2); 
   return false;
 }
 
+void resetCountdown(JKSButton &botaoPressionado){
+  countdown->lastInteraction = millis();
+}
 
 void initializeCountdown(int seconds, int duration) {
   Process *countdownProc = (Process*) malloc(sizeof(Process));
@@ -44,6 +47,8 @@ void initializeCountdown(int seconds, int duration) {
   countdownProc->duration = -1;
   countdownProc->action = processCountdown;
   processes.add(countdownProc);
+  countdown = countdownProc;
+  button.setPressHandler(resetCountdown);
 }
 
 bool processWires(Process *proc) {

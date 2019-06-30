@@ -1,8 +1,8 @@
+
 <!doctype html>
 <html lang="en">
-
 	<head>
-		<link rel= "stylesheet" type= "text/css" href= "{{ url_for('static',filename='styles/mystyle.css') }}">
+		<link rel= "stylesheet" type= "text/css" href= "static/styles/mystyle.css">
       	<meta charset="UTF-8">
       	<meta name="viewport" content="width=device-width, initial-scale=1.0">
       	<meta http-equiv="X-UA-Compatible" content="ie=edge">
@@ -11,33 +11,25 @@
 	</head>
 
 	<body style="background-color: black">
-		<br/>
-      	<h2 style="text-align: left;margin-left: 70px;font-family: Logo;font-size: 60px;margin-bottom: -50px">Sem tempo, Irmao!</h2>
+      	<h2 id="logoJogo" style=" margin-bottom: -55px;" >Sem tempo, Irmao!</h2>
 		<h3 style="  text-align:center" >Tempo Restante</h3>
-        <h1 id="clock" style="  margin: auto;
-        	width: 25%;
-        	border: 3px solid red;
-        	color: red;
-        	font-size: 125px;
-        	left: 60px;
-        	padding: 10px;
-        	margin-bottom: 5px;
-        	font-family: AlarmClock;" >02:00</h1>
+        <h1 id="clock">02:00</h1>
 
-      	<h2 id="textLifes" style="  text-align:center" >Vidas: <span id="hearts" style="color: red"> ♥ ♥ ♥ </span></h2> 
+      	<h2 id="textLifes" style="color: white; font-family:Game ; text-align:center; font-size:20px" >Vidas: <span id="hearts" style="color: red"> ♥ ♥ ♥ </span></h2> 
 
       	<div class="container">
       		<div class="row">
-        		<div class="col"  style="  text-align:center; left: -80px">
+        		<div class="col"  style="  text-align:center; left: -125px ;margin-top:-35px;">
             		<br>
-          			<h3 > Desafios Fixos: </h3>
+          			<h3 style="font-size: 20px; "> Desafios Fixos: </h3>
 					<div id="fixedChallenges">
+							
 					</div>
 				</div>
     
-       			<div class="col" style="  text-align:center;left:10px;" >
+       			<div class="col" style=" text-align:center; left: 120px ;margin-top:-35px" >
             		<br>
-					<h3>Desafios Periódicos:</h3>
+					<h3 style="font-size: 20px; ">Desafios Periódicos:</h3>
 					<div id="periodicChallenges">
 					</div>
        		 	</div>
@@ -49,11 +41,6 @@
 		<br/>
 
 		</div>
-	  
-		<!-- <button onclick="showNewFixedChallenge(true)">Click me</button>
-		<button onclick="showNewFixedChallenge(false)">Click me</button>
-		<button onclick="showNewPeriodicChallenge()">Click me</button>
-		<button onclick="missedPeriodicChallenge(1)">Click me</button> -->
 
 
 		<!--BOTOES PARA DEBUGGAR SOCKET -->
@@ -75,34 +62,29 @@
 			<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
       		<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
 			<script src="//cdnjs.cloudflare.com/ajax/libs/socket.io/2.2.0/socket.io.js" integrity="sha256-yr4fRk/GU1ehYJPAs8P4JlTgu0Hdsp4ZKrx8bDEDC3I=" crossorigin="anonymous"></script>
-			<script type="text/javascript" src="{{ url_for('static', filename = 'functions.js') }}"></script>
+			<script type="text/javascript" src="static/javascript/functions.js"></script>
 			<script type="text/javascript" charset="utf-8">
 				//Socket functions
 				var socket = io();
-
 				socket.on('start',function(data)
 				{
 					createNewFixedChallenge(data);
 					startTimer();
 				}
 				);
-
 				socket.on('newFixedChallenge',function(data)
 				{
 					createNewFixedChallenge(data);
 				});
-
 				socket.on('correctFixedChallenge',function(data)
 				{
 					correctFixedChallenge(data);
 				});
-
 				socket.on('newPeriodicChallenge',function(data)
 				{
 					createNewPeriodicChallenge(data);
 				}
 				);
-
 				socket.on('correctPeriodicChallenge',function(data)
 				{
 					console.log(data) 
@@ -113,7 +95,6 @@
 					correctPeriodicChallenge(data[0],data[1]);
 				}
 				);
-
 				socket.on('gameOver',function(data)
 				{
 					gameOver(data);
@@ -126,28 +107,29 @@
 				}
 				);
 
+				//Funcao de inicio do Jogo
+				function gameStart()
+				{
+    				socket.emit('comecou');
+				}
 
 				//Funcoes de teste do socket -> NAO VAO EXISIR NA APLICACAO REAL!
 				function socketStart()
 				{
     				socket.emit('start');
 				}
-
 				function socketNewFixedChallenge()
 				{
     				socket.emit('newFixedChallenge');
 				}
-
 				function socketCorrectFixedChallenge()
 				{
     				socket.emit('correctFixedChallenge');
 				}
-
 				function socketNewPeriodicChallenge()
 				{
     				socket.emit('newPeriodicChallenge');
 				}
-
 				function socketCorrectPeriodicChallenge()
 				{
     				socket.emit('correctPeriodicChallenge');
@@ -157,16 +139,15 @@
 				{
     				socket.emit('loseLife');
 				}
-
 				function socketGameOver()
 				{
     				socket.emit('gameOver');
 				}
-
 				// setInterval(function()
 				// {
 				// 	socket.emit("leitura","tem?")
 				// },300);
+				window.onload=gameStart;
 			</script>
 			
 

@@ -1,12 +1,14 @@
 from flask import Flask, render_template
 from flask_socketio import SocketIO,emit
 
-
-app = Flask(__name__)
-app.config['SECRET_KEY'] = 'secret!'
+app = Flask(__name__,static_url_path='/static')
 socketio = SocketIO(app)
 
 @app.route("/")
+def home():
+    return render_template("home.html")
+
+@app.route("/jogo")
 def hello():
     return render_template("pagina.html")
 
@@ -16,7 +18,7 @@ def hello():
 #Deve enviar: Nome do primeiro Desafio Fixo (string)
 @socketio.on('start')
 def startGame():
-    emit("start","Desafio Inicial")
+    emit("start","light")
 
 
 
@@ -24,7 +26,7 @@ def startGame():
 #Deve enviar: Nome do Desafio Fixo a ser adicionado (string)
 @socketio.on('newFixedChallenge')
 def newFixedChallenge():
-    emit("newFixedChallenge","Outro desafio")
+    emit("newFixedChallenge","distance")
 
 
 #Evento que informa se o atual desafio Fixo foi cumprido ou nao.Pagina usa essa informaçao para decrementar
@@ -38,7 +40,7 @@ def correctFixedChallenge():
 #Deve enviar: Nome do Desafio Periodico a ser adicionado (string)
 @socketio.on('newPeriodicChallenge')
 def newPeriodicChallenge():
-    emit("newPeriodicChallenge","Desafio Periódico")
+    emit("newPeriodicChallenge","light")
 
 #Evento que informa que o player nao cumpriu um dos desafios periodicos.Pagina usa essa informaçao para decrementar uma vida do player.
 #Deve enviar: Numero do desafio que nao foi realizado (inteiro entre 0 e numDesafiosPeriodicos-1) 
@@ -59,5 +61,3 @@ def gameOver():
 
 if __name__ == '__main__':
     app.run(port=5000)
-
-

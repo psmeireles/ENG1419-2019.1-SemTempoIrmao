@@ -13,6 +13,10 @@ Ultrasonic ultrasonic(US_TRIGGER_PIN, US_ECHO_PIN);
 
 Process *countdown;
 
+int countdownLastPrint;
+int lightLastPrint;
+float distLastPrint;
+
 void hit() { // This function will be called each time the player fails a challenge
   Serial.println("hit");
 }
@@ -32,10 +36,17 @@ bool processCountdown(Process *proc) {
     return true;
   }
 
-  char c[3];
-  sprintf(c, "%d", proc->interval - (now - proc->lastInteraction) / 1000);
-  button.init(&tft, &touch, 120, 70, 200, 100, TFT_WHITE, TFT_PURPLE,
-TFT_BLACK, c, 2); 
+
+  int t = proc->interval - (now - proc->lastInteraction) / 1000;
+
+  if(t != countdownLastPrint){
+    tft.setCursor(TFT_COUNT_X, TFT_COUNT_Y);
+    tft.fillRect(TFT_COUNT_X + 120, TFT_COUNT_Y, 100, 20, TFT_BLACK);
+    tft.setTextColor(TFT_WHITE);
+    tft.print("Countdown: " + String(t));
+    countdownLastPrint = t;
+  }
+  
   return false;
 }
 
@@ -53,6 +64,7 @@ void initializeCountdown(int seconds, int duration) {
   processes.add(countdownProc);
   countdown = countdownProc;
   button.setPressHandler(resetCountdown);
+  countdownLastPrint = 0;
 }
 
 bool processWires(Process *proc) {
@@ -115,15 +127,19 @@ void initializeWires(int pinA, int pinB, int pinC, int duration) {
 
 bool processDistance(Process *proc) {
   unsigned long now = millis();
-  tft.setCursor(TFT_DIST_X, TFT_DIST_Y);
-  tft.fillRect(TFT_DIST_X + 110, TFT_DIST_Y, 100, 120, TFT_BLACK);
-  tft.print("Distance: " + String(ultrasonic.read()));
+
+  float distance = ultrasonic.read();
+  if(((int)distance) != ((int)distLastPrint)){
+    tft.setCursor(TFT_DIST_X, TFT_DIST_Y);
+    tft.fillRect(TFT_DIST_X + 110, TFT_DIST_Y, 100, 120, TFT_BLACK);
+    tft.setTextColor(TFT_WHITE);
+    tft.print("Distance: " + String(distance)); 
+    distLastPrint = distance;
+  }
   
   // 5 seconds tolerance to start checking
   if (proc->startTime < now) {
-    float cmMsec;
-    cmMsec = ultrasonic.read();
-    if (cmMsec > proc->params[1] || cmMsec < proc->params[0]) {
+    if (distance > proc->params[1] || distance < proc->params[0]) {
       hit();
       return true;
     }
@@ -151,19 +167,25 @@ void initializeDistance(int minDist, int maxDist, int duration) {
   distProc->params[1] = maxDist;
   distProc->action = processDistance;
   processes.add(distProc);
+  distLastPrint = 0;
 }
 
 
 bool processLight(Process *proc) {
   unsigned long now = millis();
 
-  tft.setCursor(TFT_LIGHT_X, TFT_LIGHT_Y);
-  tft.fillRect(TFT_LIGHT_X + 80, TFT_LIGHT_Y, 100, 30, TFT_BLACK);
-  tft.print("Light: " + String(analogRead(LIGHT_PIN)));
+  int lightValue = analogRead(LIGHT_PIN);
+
+  if(abs(lightValue - lightLastPrint) >= 5){
+    tft.setCursor(TFT_LIGHT_X, TFT_LIGHT_Y);
+    tft.fillRect(TFT_LIGHT_X + 80, TFT_LIGHT_Y, 100, 30, TFT_BLACK);
+    tft.setTextColor(TFT_WHITE);
+    tft.print("Light: " + String(analogRead(LIGHT_PIN)));
+    lightLastPrint = lightValue;
+  }
   
   // 5 seconds tolerance to start checking
   if (proc->startTime < now) {
-    int lightValue = analogRead(LIGHT_PIN);
     if (lightValue > proc->params[1] || lightValue < proc->params[0]) {
       hit();
       return true;
@@ -192,6 +214,7 @@ void initializeLight(int minLight, int maxLight, int duration) {
   lightProc->params[1] = maxLight;
   lightProc->action = processLight;
   processes.add(lightProc);
+  lightLastPrint = 0;
 }
 
 bool processGenius(Process *proc) {

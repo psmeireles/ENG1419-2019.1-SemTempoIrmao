@@ -21,10 +21,15 @@
 #define BTN_Y 44
 #define BTN_G 46
 
+
+#define TFT_COUNT_X 20
+#define TFT_COUNT_Y 150
 #define TFT_DIST_X 20
 #define TFT_DIST_Y 200
 #define TFT_LIGHT_X 20
-#define TFT_LIGHT_Y 150
+#define TFT_LIGHT_Y 250
+
+
 
 struct Process{
     unsigned long startTime;

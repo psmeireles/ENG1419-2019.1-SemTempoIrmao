@@ -16,9 +16,13 @@ Process *countdown;
 int countdownLastPrint;
 int lightLastPrint;
 float distLastPrint;
+unsigned long lastHit = 0;
 
 void hit() { // This function will be called each time the player fails a challenge
-  Serial.println("hit");
+  if(millis() - lastHit > 250){
+    Serial.println("hit");
+    lastHit = millis(); 
+  }
 }
 
 bool processCountdown(Process *proc) {
@@ -74,7 +78,7 @@ bool processWires(Process *proc) {
     // Process is over
     bool result = checkWires(proc);
     if (result) {
-      Serial.print("finished wires");
+      Serial.println("finished wires");
     }
     else {
       hit();

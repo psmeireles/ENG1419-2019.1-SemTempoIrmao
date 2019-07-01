@@ -10,16 +10,16 @@
 #define LIGHT_PIN A14
 #define US_ECHO_PIN 41
 #define US_TRIGGER_PIN 39
-#define WIRES_BTN 51
+#define WIRES_BTN 36
 #define WIRES_1 A8
 #define WIRES_2 A9
 #define WIRES_3 A10
-#define LED_R 34
-#define LED_Y 36
-#define LED_G 38
-#define BTN_R 42
-#define BTN_Y 44
-#define BTN_G 46
+#define LED_R 22
+#define LED_Y 24
+#define LED_G 26
+#define BTN_R 23
+#define BTN_Y 25
+#define BTN_G 27
 
 
 #define TFT_COUNT_X 20

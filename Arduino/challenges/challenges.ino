@@ -9,16 +9,9 @@ void setup() {
   pinMode(LED_G, OUTPUT);
   tft.begin( tft.readID() );
   tft.fillScreen(TFT_BLACK);
-  button.init(&tft, &touch, 120, 70, 200, 100, TFT_WHITE, TFT_PURPLE,
-TFT_BLACK, "Countdown", 2);
-  tft.setTextSize(2);
-  tft.setTextColor(TFT_WHITE);
-  tft.setCursor(TFT_COUNT_X, TFT_COUNT_Y);
-  tft.print("Countdown:");
-  tft.setCursor(TFT_LIGHT_X, TFT_LIGHT_Y);
-  tft.print("Light:");
-  tft.setCursor(TFT_DIST_X, TFT_DIST_Y);
-  tft.print("Distance:");
+  button.init(&tft, &touch, 120, 70, 200, 100, TFT_WHITE, TFT_RED,
+TFT_WHITE, "Start", 2);
+  button.setPressHandler(startGame);
 }
 
 
@@ -63,6 +56,13 @@ void loop() {
     int lightInterval = text.substring(17).toInt();
     initializeGenius(sequence, lightInterval);
   }
+  else if(text.startsWith("end")){
+    processes.clear();
+    tft.fillScreen(TFT_BLACK);
+    button.init(&tft, &touch, 120, 70, 200, 100, TFT_WHITE, TFT_RED,
+  TFT_WHITE, "Start", 2);
+    button.setPressHandler(startGame);
+  }
 
 
   for (int i = 0; i < processes.size(); i++) {
@@ -70,6 +70,23 @@ void loop() {
     bool terminate = proc->action(proc);
     if (terminate) {
       processes.remove(i);
+      free(proc);
     }
   }
+}
+
+void startGame(){
+  Serial.println("start");
+  tft.fillScreen(TFT_BLACK);
+  button.init(&tft, &touch, 120, 70, 200, 100, TFT_WHITE, TFT_RED,
+TFT_WHITE, "Countdown", 2);
+  button.setPressHandler(NULL);
+  tft.setTextSize(2);
+  tft.setTextColor(TFT_WHITE);
+  tft.setCursor(TFT_COUNT_X, TFT_COUNT_Y);
+  tft.print("Countdown:");
+  tft.setCursor(TFT_LIGHT_X, TFT_LIGHT_Y);
+  tft.print("Light:");
+  tft.setCursor(TFT_DIST_X, TFT_DIST_Y);
+  tft.print("Distance:");
 }

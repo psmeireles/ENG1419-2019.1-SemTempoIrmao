@@ -129,6 +129,7 @@ bool processDistance(Process *proc) {
   unsigned long now = millis();
 
   float distance = ultrasonic.read();
+
   if(((int)distance) != ((int)distLastPrint)){
     tft.setCursor(TFT_DIST_X, TFT_DIST_Y);
     tft.fillRect(TFT_DIST_X + 110, TFT_DIST_Y, 100, 120, TFT_BLACK);

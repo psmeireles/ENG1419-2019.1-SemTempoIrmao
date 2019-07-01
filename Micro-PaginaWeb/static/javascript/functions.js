@@ -4,6 +4,7 @@ var numberLifes = 3;
 var timer;
 var imageHeight = 60;
 var imageWidth = 60;
+var currentLevel = 1;
 
 function createNewFixedChallenge(challengeName)
 {
@@ -49,11 +50,11 @@ function createNewFixedChallenge(challengeName)
 }
 
 
-function startTimer()
+function startTimer(minutes,seconds)
 {
     var endCountdown = new Date();
-    endCountdown.setTime(endCountdown.getTime() + (2 * 60 * 1000));
-    endCountdown.setSeconds(endCountdown.getSeconds() + 1);
+    endCountdown.setTime(endCountdown.getTime() + (minutes * 60 * 1000));
+    endCountdown.setSeconds(endCountdown.getSeconds() + seconds + 1);
     timer = setInterval
     (
         function() 
@@ -70,7 +71,7 @@ function startTimer()
             if (elapsedTime < 0) 
             {
                 document.getElementById("clock").innerHTML = "00:00"
-                gameOver(false);
+               //gameOver(false);
             }
         }
     , 1000);
@@ -153,13 +154,20 @@ function gameOver(hasWon)
     var endMessage = document.getElementById("textLifes");
     if(!hasWon)
     {
-        endMessage.innerHTML= "Você perdeu!"
+        endMessage.innerHTML= "Você perdeu! Clique aqui para tentar novamente."
         endMessage.style.color="red";
+		endMessage.onclick = restartlevel();
+		
     }
     else if(hasWon)
     {
         endMessage.innerHTML= "Você ganhou! Próximo nível começa em 3 segundos"
         endMessage.style.color="green";
+		setTimeout(
+			function ()
+			{
+				restartlevel();
+			},3000);
     }
 }
 
@@ -170,7 +178,24 @@ function challengeCleared(challengeType,challengeNumber)
         {
             var clearedChallenge=document.getElementById(challengeType+challengeNumber);
             clearedChallenge.parentNode.removeChild(clearedChallenge);
-        },4000);
+        },3000);
+}
+
+function restartlevel()
+{
+	const fixedChallenges = document.getElementById("fixedChallenges");
+	while (fixedChallenges.firstChild) 
+	{
+		fixedChallenges.firstChild.remove();
+	}
+	const periodicChallenges = document.getElementById("periodicChallenges");
+	while (periodicChallenges.firstChild) 
+	{
+		periodicChallenges.firstChild.remove();
+	}
+	numberFixedChallenge = 0;
+	numberPeriodicChallenge = 0;
+	startTimer(1,30);
 }
 
 

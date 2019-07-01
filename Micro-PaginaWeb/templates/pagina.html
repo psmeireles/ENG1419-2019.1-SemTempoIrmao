@@ -51,6 +51,7 @@
 		<button onclick="socketCorrectPeriodicChallenge()">socketCorrectPeriodicChallenge</button>
 		<button onclick="socketLoseLife()">socketLoseLife(</button>
 		<button onclick="socketGameOver()">socketGameOver</button>
+		<button onclick="restartlevel()">restartlevel</button>
 
     <!-- <button onclick="comecaTimer()">Click me</button> -->
 		<footer>
@@ -69,7 +70,7 @@
 				socket.on('start',function(data)
 				{
 					createNewFixedChallenge(data);
-					startTimer();
+					startTimer(2,0);
 				}
 				);
 				socket.on('newFixedChallenge',function(data)

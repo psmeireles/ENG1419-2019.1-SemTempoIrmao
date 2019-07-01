@@ -21,6 +21,11 @@
 #define BTN_Y 44
 #define BTN_G 46
 
+#define TFT_DIST_X 20
+#define TFT_DIST_Y 200
+#define TFT_LIGHT_X 20
+#define TFT_LIGHT_Y 150
+
 struct Process{
     unsigned long startTime;
     unsigned long lastInteraction;

@@ -10,7 +10,13 @@ void setup() {
   tft.begin( tft.readID() );
   tft.fillScreen(TFT_BLACK);
   button.init(&tft, &touch, 120, 70, 200, 100, TFT_WHITE, TFT_PURPLE,
-TFT_BLACK, "Botao 1", 2); 
+TFT_BLACK, "Countdown", 2);
+  tft.setCursor(TFT_LIGHT_X, TFT_LIGHT_Y);
+  tft.setTextSize(2);
+  tft.setTextColor(TFT_WHITE);
+  tft.print("Light:");
+  tft.setCursor(TFT_DIST_X, TFT_DIST_Y);
+  tft.print("Distance:");
 }
 
 

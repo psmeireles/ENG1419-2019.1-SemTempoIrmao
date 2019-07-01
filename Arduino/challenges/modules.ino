@@ -2,10 +2,12 @@
 #include "definitions.h"
 #include <Math.h>
 #include <Ultrasonic.h>
+#include <stdio.h>
 
 #define PIN_A 5
 #define PIN_B 2.5
 #define PIN_C 0
+
 
 Ultrasonic ultrasonic(US_TRIGGER_PIN, US_ECHO_PIN);
 
@@ -24,14 +26,16 @@ bool processCountdown(Process *proc) {
     return true;
   }
 
-  if ((now - proc->lastInteraction) / 1000 >= proc->interval) {
+  if ((now - proc->lastInteraction) / 1000 > proc->interval) {
     proc->lastInteraction = now;
     hit();
     return true;
   }
 
+  char c[3];
+  sprintf(c, "%d", proc->interval - (now - proc->lastInteraction) / 1000);
   button.init(&tft, &touch, 120, 70, 200, 100, TFT_WHITE, TFT_PURPLE,
-TFT_BLACK, &String((now - proc->lastInteraction) / 1000)[0], 2); 
+TFT_BLACK, c, 2); 
   return false;
 }
 
@@ -111,7 +115,10 @@ void initializeWires(int pinA, int pinB, int pinC, int duration) {
 
 bool processDistance(Process *proc) {
   unsigned long now = millis();
-
+  tft.setCursor(TFT_DIST_X, TFT_DIST_Y);
+  tft.fillRect(TFT_DIST_X + 110, TFT_DIST_Y, 100, 120, TFT_BLACK);
+  tft.print("Distance: " + String(ultrasonic.read()));
+  
   // 5 seconds tolerance to start checking
   if (proc->startTime < now) {
     float cmMsec;
@@ -150,6 +157,10 @@ void initializeDistance(int minDist, int maxDist, int duration) {
 bool processLight(Process *proc) {
   unsigned long now = millis();
 
+  tft.setCursor(TFT_LIGHT_X, TFT_LIGHT_Y);
+  tft.fillRect(TFT_LIGHT_X + 80, TFT_LIGHT_Y, 100, 30, TFT_BLACK);
+  tft.print("Light: " + String(analogRead(LIGHT_PIN)));
+  
   // 5 seconds tolerance to start checking
   if (proc->startTime < now) {
     int lightValue = analogRead(LIGHT_PIN);

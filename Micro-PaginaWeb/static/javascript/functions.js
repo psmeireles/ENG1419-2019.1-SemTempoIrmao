@@ -156,9 +156,11 @@ function gameOver(hasWon)
     {
         endMessage.innerHTML= "Você perdeu! Clique aqui para tentar novamente."
         endMessage.style.color="red";
-		endMessage.onclick = restartlevel();
-		
-    }
+		endMessage.onclick = restartlevel;
+		endMessage.style.cursor = "pointer";
+		endMessage.onmoueover = changeColor(endMessage,'darkred');
+		endMessage.onmouseout = changeColor(endMessage,'red');
+	}
     else if(hasWon)
     {
         endMessage.innerHTML= "Você ganhou! Próximo nível começa em 3 segundos"
@@ -179,6 +181,12 @@ function challengeCleared(challengeType,challengeNumber)
             var clearedChallenge=document.getElementById(challengeType+challengeNumber);
             clearedChallenge.parentNode.removeChild(clearedChallenge);
         },3000);
+}
+
+
+function changeColor(elem,color)
+{
+	endMessage.style.color=color;
 }
 
 function restartlevel()

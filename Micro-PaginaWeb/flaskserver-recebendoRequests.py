@@ -1,37 +1,49 @@
-from flask import Flask, render_template
+from flask import Flask, render_template,request
 from flask_socketio import SocketIO,emit
 
 app = Flask(__name__,static_url_path='/static')
 socketio = SocketIO(app)
 
+##Rotas para renderização de páginas
 @app.route("/")
 def home():
     return render_template("home.html")
 
 @app.route("/jogo")
 def hello():
-    return render_template("pagina.html")
+    return render_template("jogo.html")
+    
+########################
 
-
-@app.route("/teste")
-def fakeStart():
-    socketio.emit("start","light")
-    return "sextou"
-
+#Evento de inicio do jogo: Troca a página principal pela página do jogo
+#Deve enviar: Nada
+@app.route("/changePage")
+def changePage():
+    socketio.emit("changePage","")
+    return "Changed Page!"
 
 #Evento de inicio do jogo:Responsável por comecar o timer da página e mostrar o primeiro desafio fixo
-#Deve enviar: Nome do primeiro Desafio Fixo (string)
-@socketio.on('start')
+#Deve enviar: Nome do primeiro Desafio Fixo (string) + parametros
+@app.route("/startGame",  methods=['POST'])
 def startGame():
-    emit("start","light")
-
-
+    params = []
+    content = request.json
+    for key in content:
+        params.append(content[key]);
+    socketio.emit("start",params)
+    return "Game Started!"
 
 #Evento que adiciona um novo desafio Fixo
-#Deve enviar: Nome do Desafio Fixo a ser adicionado (string)
-@socketio.on('newFixedChallenge')
+#Deve enviar: Nome do Desafio Fixo a ser adicionado e parametros(string)
+@app.route("/newFixedChallenge",  methods=['POST'])
 def newFixedChallenge():
-    emit("newFixedChallenge","distance")
+    params = []
+    content = request.json
+    for key in content:
+        params.append(content[key]);
+    socketio.emit("start",params)
+    return "Game Started!"
+
 
 
 #Evento que informa se o atual desafio Fixo foi cumprido ou nao.Pagina usa essa informaçao para decrementar
@@ -65,4 +77,4 @@ def gameOver():
 
 
 if __name__ == '__main__':
-    app.run(port=5000,debug=True)
+    app.run(port=5000)

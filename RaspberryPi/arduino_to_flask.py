@@ -26,28 +26,28 @@ def generate_challenges(challenge_instance):
 
         duration = random.randint(15, 60) # dois digitos
         seconds = random.randint(5, duration)
-        return "%.2f" % seconds + " " + "%.2f" % duration
+        return "countdown " + "%.2f" % seconds + " " + "%.2f" % duration
 
     elif(challenge_instance == "wires"):
 
         for x in range(1,4):
-            GENIUS_ORDER.append(random.choice(WIRES_OPTIONS))
+            WIRES_ORDER.append(random.choice(WIRES_OPTIONS))
         duration = random.randint(20, 99)
-        return GENIUS_ORDER[0] + " " + GENIUS_ORDER[1] + " " + GENIUS_ORDER[2] + " " + "%.2f" % duration
+        return "wires " + WIRES_ORDER[0] + " " + WIRES_ORDER[1] + " " + WIRES_ORDER[2] + " " + "%.2f" % duration
 
     elif (challenge_instance == "distance"):
 
         distance_max = random.randint(1, 50)
         distance_min = random.randint(1, distance_max)
         duration = random.randint(20, 99)
-        return str(distance_min) + " " + str(distance_max) + " " + "%.2f" % duration
+        return "distance " + str(distance_min) + " " + str(distance_max) + " " + "%.2f" % duration
 
     elif (challenge_instance == "light"):
 
         light_max = random.randint(1,1024)
         light_min = random.randint(0, light_max)
         duration = random.randint(20, 99)
-        return str(light_min) + " " + str(light_max) + " " + "%.2f" % duration
+        return "light " + str(light_min) + " " + str(light_max) + " " + "%.2f" % duration
 
     elif (challenge_instance == "genius"):
 
@@ -60,7 +60,7 @@ def generate_challenges(challenge_instance):
                     GENIUS_ORDER.append(element)
         light_interval = str(500)
         duration = random.randint(5, 99)  # dois digitos
-        return GENIUS_ORDER[0] + " " + GENIUS_ORDER[1] + " " + GENIUS_ORDER[2] + " " + GENIUS_ORDER[3] + " " + GENIUS_ORDER[4] + " " + light_interval + " " + "%.2f" % duration
+        return "genius " + GENIUS_ORDER[0] + " " + GENIUS_ORDER[1] + " " + GENIUS_ORDER[2] + " " + GENIUS_ORDER[3] + " " + GENIUS_ORDER[4] + " " + light_interval + " " + "%.2f" % duration
 
     else:
         print("Modo de jogo nao encontrado!")

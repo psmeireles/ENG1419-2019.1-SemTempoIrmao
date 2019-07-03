@@ -6,13 +6,19 @@ class serial_client:
 
     def __init__(self):
         self.DEVICE = '/dev/cu.usbmodem14101'
-        self.TIME_OUT = 100000
+        self.TIME_OUT = 1
         self.BAUD = 9600
+        self.TIMEOUT= 1
+        self.PARITY='N'
+        self.STOPBITS= 1
+        self.BYTESIZE= 8
 
     def connect(self):
         try:
-            self.client = serial.Serial(self.DEVICE, baudrate=self.BAUD, timeout=self.TIME_OUT) # Setando timeout 1s para a conexao
-            print "The port %s is available" % self.client
+            self.client = serial.Serial(self.DEVICE, baudrate=self.BAUD,
+                                        bytesize=self.BYTESIZE, parity=self.PARITY,
+                                        stopbits=self.STOPBITS, timeout=self.TIME_OUT) # Setando timeout 1s para a conexao
+            #print "The port %s is available" % self.client
 
         except serial.serialutil.SerialException:
             print "The port is at use"
@@ -27,7 +33,8 @@ class serial_client:
         if not reply:
             return None
         else:
-            reply = reply.decode().strip()
+            reply = reply.strip()
+            print(str(reply))
         return str(reply)
 
     def write(self, message):

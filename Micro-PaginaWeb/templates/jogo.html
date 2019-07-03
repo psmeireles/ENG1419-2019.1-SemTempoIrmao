@@ -69,9 +69,8 @@
 				var socket = io();
 				socket.on('start',function(data)
 				{
-					data=data[0];
-					createNewFixedChallenge(data);
-					startTimer(2,0);
+					createNewFixedChallenge(data.challenge);
+					startTimer(data.minutes, data.seconds);
 				}
 				);
 				socket.on('newFixedChallenge',function(data)

@@ -36,7 +36,6 @@ bool processCountdown(Process *proc) {
 
   if ((now - proc->lastInteraction) / 1000 > proc->interval) {
     proc->lastInteraction = now;
-    hit();
     Serial.println("lost countdown");
     return true;
   }
@@ -64,7 +63,7 @@ void initializeCountdown(int seconds, int duration) {
   countdownProc->startTime = millis();
   countdownProc->lastInteraction = countdownProc->startTime;
   countdownProc->interval = seconds;
-  countdownProc->duration = -1;
+  countdownProc->duration = duration;
   countdownProc->action = processCountdown;
   processes.add(countdownProc);
   countdown = countdownProc;
@@ -82,8 +81,8 @@ bool processWires(Process *proc) {
       Serial.println("finished wires");
     }
     else {
-      hit();
       Serial.println("lost wires");
+      lastHit = millis(); 
     }
     return true;
   }
@@ -91,7 +90,7 @@ bool processWires(Process *proc) {
   if (digitalRead(WIRES_BTN) == HIGH) {
     bool result = checkWires(proc);
     if (result) {
-      Serial.print("finished wires");
+      Serial.println("finished wires");
       return true;
     }
     else {
@@ -147,8 +146,8 @@ bool processDistance(Process *proc) {
   // 5 seconds tolerance to start checking
   if (proc->startTime < now) {
     if (distance > proc->params[1] || distance < proc->params[0]) {
-      hit();
       Serial.println("lost distance");
+      lastHit = millis(); 
       return true;
     }
   }
@@ -195,8 +194,8 @@ bool processLight(Process *proc) {
   // 5 seconds tolerance to start checking
   if (proc->startTime < now) {
     if (lightValue > proc->params[1] || lightValue < proc->params[0]) {
-      hit();
       Serial.println("lost light");
+      lastHit = millis(); 
       return true;
     }
   }
@@ -237,7 +236,7 @@ bool processGenius(Process *proc) {
     digitalWrite(colors[1], LOW);
     digitalWrite(colors[2], LOW);
     digitalWrite(colors[proc->params[ledIndex]], HIGH);
-    Serial.println("Acendeu o " + String(colors[proc->params[ledIndex]]));
+    //Serial.println("Acendeu o " + String(colors[proc->params[ledIndex]]));
     proc->params[6]++; 
   }
 

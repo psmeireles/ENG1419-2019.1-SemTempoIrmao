@@ -3,7 +3,7 @@
 
 void setup() {
   Serial.begin(9600);
-  Serial.setTimeout(10);
+  Serial.setTimeout(20);
   pinMode(LED_R, OUTPUT);
   pinMode(LED_Y, OUTPUT);
   pinMode(LED_G, OUTPUT);

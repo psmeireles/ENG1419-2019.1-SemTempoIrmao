@@ -11,12 +11,16 @@ endereco_base = "http://127.0.0.1" + ":" + port
 
 endereco_home = endereco_base + "/home"
 endereco_start = endereco_base + "/start"
-endereco_end = endereco_base + "/end"
-endereco_challenge_completed = endereco_base + "/challenge_completed"
+endereco_end = endereco_base + "/gameOver"
+endereco_hit = endereco_base + "/hit"
+endereco_periodic_challenge_completed = endereco_base + "/correctPeriodicChallenge"
+endereco_fix_challenge_completed = endereco_base + "/correctPeriodicChallenge"
 
 
 #CONSTANTES
 CHALLENGES_MODES = ['countdown', 'wires', 'distance', 'light', 'genius']
+FIX_MODES = ['wires', 'genius']
+PERIODIC_MODES = ['countdown', 'distance', 'light']
 WIRES_OPTIONS = ['1', '2', '3']
 WIRES_ORDER = []
 GENIUS_OPTIONS = ['1', '2', '3']
@@ -99,15 +103,17 @@ def read_from_arduino(SERIAL_PORT , GAME_STARTED, HEARTS):
                 GAME_STARTED = True
                 COUNTDOWN = time.time()
                 TIMESUP = (COUNTDOWN + DELTA_T)
-                dados = {"minutes": DELTA_T/60, "seconds": DELTA_T%60, "challenge": "genius"}
+                challenge = generate_challenges(random.choice(CHALLENGES_MODES))
+                challengeName = challenge.split(' ')[0]
+                dados = {"minutes": DELTA_T/60, "seconds": DELTA_T%60, "challenge": challengeName}
                 response = post(endereco_start, json=dados)
                 finish = Timer(TIMESUP, finish_game, args=[SERIAL_PORT, GAME_STARTED],)
                 finish.start()
-                challenge = generate_challenges("wires")
                 SERIAL_PORT.write(challenge)
 
             elif(action == "hit"):
-                if(HEARTS == 0 ):
+                if(HEARTS == 1 ):
+                    HEARTS = (HEARTS - 1)
                     print("Perdeu o Jogo - TOTAL: " + str(HEARTS))
                     GAME_STARTED = False
                     reply_to_arduino = "end"
@@ -119,19 +125,20 @@ def read_from_arduino(SERIAL_PORT , GAME_STARTED, HEARTS):
                     HEARTS = (HEARTS - 1)
                     print("Perdeu Vida - TOTAL: " + str(HEARTS))
                     dados = {"HEARTS": str(HEARTS)}
-                    response = post(endereco_base, dados)
+                    response = get(endereco_hit)
 
             elif(action == "finished"):
                 print("Completou Desafio!" + challenge_completed)
                 reply_to_arduino = generate_challenges(random.choice(CHALLENGES_MODES))
                 print(reply_to_arduino)
-                dados = {"CHALLENGE_COMPLETED": str(challenge_completed)}
-                response = post(endereco_challenge_completed, dados)
+                dados = {"challenge": challenge_completed, "correct": True}
+                response = post(endereco_fix_challenge_completed if challenge_completed in FIX_MODES else endereco_periodic_challenge_completed, json=dados)
                 SERIAL_PORT.write(reply_to_arduino)
 
             elif(action == "lost"):
                 print("Nao Completou Desafio!")
-                if(HEARTS == 0 ):
+                if(HEARTS == 1 ):
+                    HEARTS = (HEARTS - 1)
                     print("Perdeu o Jogo - TOTAL: " + str(HEARTS))
                     GAME_STARTED = False
                     reply_to_arduino = "end"
@@ -143,7 +150,9 @@ def read_from_arduino(SERIAL_PORT , GAME_STARTED, HEARTS):
                     HEARTS = (HEARTS - 1)
                     print("Perdeu Vida - TOTAL: " + str(HEARTS))
                     dados = {"HEARTS": str(HEARTS)}
-                    response = post(endereco_base, dados)
+                    response = get(endereco_hit)
+                    dados = {"challenge": challenge_completed, "correct": False}
+                    response = post(endereco_fix_challenge_completed if challenge_completed in FIX_MODES else endereco_periodic_challenge_completed, json=dados)
                     reply_to_arduino = generate_challenges(random.choice(CHALLENGES_MODES))
                     print(reply_to_arduino)
                     SERIAL_PORT.write(reply_to_arduino)

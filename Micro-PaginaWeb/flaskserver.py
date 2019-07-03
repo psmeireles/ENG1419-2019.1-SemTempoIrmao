@@ -45,9 +45,12 @@ def newFixedChallenge():
 #Evento que informa se o atual desafio Fixo foi cumprido ou nao.Pagina usa essa informaçao para decrementar
 #uma vida do player caso ele tenha errado.
 #Deve enviar: True se acertou e False se errou (bool)
-@app.route('/correctFixedChallenge')
+@app.route('/correctFixedChallenge', methods=['POST'])
 def correctFixedChallenge():
-    emit("correctFixedChallenge",True)
+    content = request.json
+    print(content)
+    socketio.emit("correctFixedChallenge", content['correct'])
+    return "ok"
 
 #Evento que adiciona um novo desafio Periodico.
 #Deve enviar: Nome do Desafio Periodico a ser adicionado (string)
@@ -57,19 +60,25 @@ def newPeriodicChallenge():
 
 #Evento que informa que o player nao cumpriu um dos desafios periodicos.Pagina usa essa informaçao para decrementar uma vida do player.
 #Deve enviar: Numero do desafio que nao foi realizado (inteiro entre 0 e numDesafiosPeriodicos-1) 
-@app.route('/correctPeriodicChallenge')
+@app.route('/correctPeriodicChallenge', methods=['POST'])
 def correctPeriodicChallenge():
-    emit("correctPeriodicChallenge","1 true")
+    content = request.json
+    print(content)
+    socketio.emit("correctPeriodicChallenge", content['challenge'] + " true")
+    return "ok"
 
-@app.route('/loseLife')
+
+@app.route('/hit')
 def loseLife():
-    emit("loseLife","")
+    socketio.emit("loseLife","")
+    return "lost life"
 
 #Evento que informa o fim do jogo. Ao receber esse evento, a pagina para o timer e exibe uma mensagem de vitoria/derrota
 #Deve enviar: True se venceu o jogo ou False se perdeu (bool)
 @app.route('/gameOver')
 def gameOver():
-    emit("gameOver",False)
+    socketio.emit("gameOver",False)
+    return "game over"
 
 
 if __name__ == '__main__':

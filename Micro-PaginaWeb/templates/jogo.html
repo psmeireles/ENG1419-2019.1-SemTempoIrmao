@@ -79,6 +79,8 @@
 				});
 				socket.on('correctFixedChallenge',function(data)
 				{
+					debugger
+					console.log(data)
 					correctFixedChallenge(data);
 				});
 				socket.on('newPeriodicChallenge',function(data)
@@ -88,6 +90,7 @@
 				);
 				socket.on('correctPeriodicChallenge',function(data)
 				{
+					debugger
 					console.log(data) 
 					//data = data.toString(); 
 					console.log(typeof(data)) 

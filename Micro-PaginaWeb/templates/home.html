@@ -1,0 +1,38 @@
+
+<!doctype html>
+<html lang="en">
+	<head>
+		<link rel= "stylesheet" type= "text/css" href= "static/styles/mystyle.css">
+      	<meta charset="UTF-8">
+      	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+      	<meta http-equiv="X-UA-Compatible" content="ie=edge">
+    	<!-- Bootstrap CSS -->
+      	<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+	</head>
+
+	<body style="background-color: black">
+    <h1 id="title" class="centralized" >Sem tempo, Irmao!</h1>
+    <h2 id="message" class="centralized">Resolva todos os desafios antes que o tempo acabe para desarmar a bomba e impedir que ela exploda!</h2>
+    
+  <!-- <a id ="playButton" href="/jogo" class="centralized" style="text-decoration:none"  -->
+                            <!-- onmouseover="changeButtonColor(true)" onmouseout="changeButtonColor(false)">Jogar</a> -->
+
+  <footer>
+			<script src="//cdnjs.cloudflare.com/ajax/libs/socket.io/2.2.0/socket.io.js" integrity="sha256-yr4fRk/GU1ehYJPAs8P4JlTgu0Hdsp4ZKrx8bDEDC3I=" crossorigin="anonymous"></script>
+			<script type="text/javascript" charset="utf-8">
+				//Socket functions
+				var socket = io();
+				socket.on('changePage',function(data)
+				{
+					document.location.href = "/jogo";
+				}
+				);
+
+
+        </script>
+  </footer>
+	</body>
+
+
+
+</html>

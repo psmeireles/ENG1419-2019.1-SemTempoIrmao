@@ -1,13 +1,17 @@
 import time
 import random
+from requests import *
 from threading import Timer
 from serial_class import *
 
-endereco_base = "127.0.0.1"
-endereco_home = endereco_base + "/home"
-endereco_start = endereco_base + "/start"
+endereco = "http://127.0.0.1"
+port = "5000"
+endereco_base = "http://127.0.0.1" + ":" + port
 
-#resposta = post(endereco_base, json=dados)
+endereco_home = endereco_base + "/home"
+endereco_start = endereco_base + "/startGame"
+endereco_end = endereco_base + "/end"
+endereco_challenge_completed = endereco_base + "/challenge_completed"
 
 
 #CONSTANTES
@@ -90,6 +94,9 @@ def read_from_arduino(SERIAL_PORT , GAME_STARTED, HEARTS):
                 GAME_STARTED = True
                 COUNTDOWN = time.time()
                 TIMESUP = (COUNTDOWN + DELTA_T)
+                dados = {"TIME": str(TIMESUP)}
+                response = post(endereco_start, dados)
+                print(response.txt)
                 finish = Timer(TIMESUP, finish_game, args=[SERIAL_PORT, GAME_STARTED, ],)
                 finish.start()
                 SERIAL_PORT.disconnect
@@ -100,16 +107,24 @@ def read_from_arduino(SERIAL_PORT , GAME_STARTED, HEARTS):
                     GAME_STARTED = False
                     reply_to_arduino = "end"
                     print(reply_to_arduino)
+                    response = get(endereco_end)
+                    print(response.txt)
                     SERIAL_PORT.write(reply_to_arduino)
 
                 else:
                     HEARTS = (HEARTS - 1)
                     print("Perdeu Vida - TOTAL: " + str(HEARTS))
+                    dados = {"HEARTS": str(HEARTS)}
+                    response = post(endereco_base, dados)
+                    print(response.txt)
 
             elif(action == "finished"):
                 print("Completou Desafio!" + challenge_completed)
                 reply_to_arduino = generate_challenges(random.choice(CHALLENGES_MODES))
                 print(reply_to_arduino)
+                dados = {"CHALLENGE_COMPLETED": str(challenge_completed)}
+                response = post(endereco_challenge_completed, dados)
+                print(response.txt)
                 SERIAL_PORT.write(reply_to_arduino)
 
             elif(action == "lost"):

@@ -37,6 +37,7 @@ bool processCountdown(Process *proc) {
   if ((now - proc->lastInteraction) / 1000 > proc->interval) {
     proc->lastInteraction = now;
     hit();
+    Serial.println("lost countdown");
     return true;
   }
 
@@ -82,6 +83,7 @@ bool processWires(Process *proc) {
     }
     else {
       hit();
+      Serial.println("lost wires");
     }
     return true;
   }
@@ -146,6 +148,7 @@ bool processDistance(Process *proc) {
   if (proc->startTime < now) {
     if (distance > proc->params[1] || distance < proc->params[0]) {
       hit();
+      Serial.println("lost distance");
       return true;
     }
   }
@@ -193,6 +196,7 @@ bool processLight(Process *proc) {
   if (proc->startTime < now) {
     if (lightValue > proc->params[1] || lightValue < proc->params[0]) {
       hit();
+      Serial.println("lost light");
       return true;
     }
   }

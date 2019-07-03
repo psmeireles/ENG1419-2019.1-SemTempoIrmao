@@ -5,7 +5,7 @@ import serial
 class serial_client:
 
     def __init__(self):
-        self.DEVICE = '/dev/cu.usbmodem14101'
+        self.DEVICE = '/dev/cu.usbmodem14201'
         self.TIME_OUT = 1
         self.BAUD = 9600
         self.TIMEOUT= 1
@@ -21,7 +21,7 @@ class serial_client:
             #print "The port %s is available" % self.client
 
         except serial.serialutil.SerialException:
-            print "The port is at use"
+            print("The port is at use")
             self.client.close()
             self.client.open()
 
@@ -33,8 +33,8 @@ class serial_client:
         if not reply:
             return None
         else:
-            reply = reply.strip()
-            print(str(reply))
+            reply = reply.decode("utf-8", errors='ignore').strip()
+            print(reply)
         return str(reply)
 
     def write(self, message):

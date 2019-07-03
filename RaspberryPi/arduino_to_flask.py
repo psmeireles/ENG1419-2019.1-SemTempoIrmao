@@ -1,8 +1,7 @@
 import time
-import threading
 import random
-from requests import get, post
-from serial_client_class import *
+from threading import Timer
+from serial_class import *
 
 endereco_base = "127.0.0.1"
 endereco_home = endereco_base + "/home"
@@ -17,7 +16,7 @@ WIRES_OPTIONS = ['1', '2', '3']
 WIRES_ORDER = []
 GENIUS_OPTIONS = ['1', '2', '3']
 GENIUS_ORDER = []
-
+DELTA_T = 600
 
 def generate_challenges(challenge_instance):
 
@@ -64,9 +63,18 @@ def generate_challenges(challenge_instance):
     else:
         print("Modo de jogo nao encontrado!")
 
+def finish_game(SERIAL_PORT, GAME_STARTED):
+    print("FINISH")
+    GAME_STARTED = False
+    SERIAL_PORT.connect()
+    reply_to_arduino = "end"
+    print(reply_to_arduino)
+    SERIAL_PORT.write(reply_to_arduino)
+    return
 
-def read_from_arduino(SERIAL_PORT , HEARTS):
-    while (True):
+
+def read_from_arduino(SERIAL_PORT , GAME_STARTED, HEARTS):
+    while (GAME_STARTED):
         SERIAL_PORT.connect()
         reply = SERIAL_PORT.read()
         if reply is not None:
@@ -79,31 +87,47 @@ def read_from_arduino(SERIAL_PORT , HEARTS):
                 action = reply
 
             if(action == "start"):
+                GAME_STARTED = True
                 COUNTDOWN = time.time()
-                TIMESUP = "timer: " + str(COUNTDOWN + 10)
-                SERIAL_PORT.write(TIMESUP)
+                TIMESUP = (COUNTDOWN + DELTA_T)
+                finish = Timer(TIMESUP, finish_game, args=[SERIAL_PORT, GAME_STARTED, ],)
+                finish.start()
                 SERIAL_PORT.disconnect
 
             elif(action == "hit"):
                 if(HEARTS == 0 ):
                     print("Perdeu o Jogo - TOTAL: " + str(HEARTS))
+                    GAME_STARTED = False
+                    reply_to_arduino = "end"
+                    print(reply_to_arduino)
+                    SERIAL_PORT.write(reply_to_arduino)
+
                 else:
                     HEARTS = (HEARTS - 1)
                     print("Perdeu Vida - TOTAL: " + str(HEARTS))
 
             elif(action == "finished"):
-                print("Completou Desafio!" + challenge_completed + "\n")
+                print("Completou Desafio!" + challenge_completed)
+                reply_to_arduino = generate_challenges(random.choice(CHALLENGES_MODES))
+                print(reply_to_arduino)
+                SERIAL_PORT.write(reply_to_arduino)
 
             elif(action == "lost"):
-                print("Nao Completou Desafio!" + challenge_completed + "\n")
+                print("Nao Completou Desafio!")
+                reply_to_arduino = generate_challenges(random.choice(CHALLENGES_MODES))
+                print(reply_to_arduino)
+                SERIAL_PORT.write(reply_to_arduino)
             SERIAL_PORT.disconnect
+
+
+    finish.cancel()
+    return False
 
 def main():
     HEARTS = 3
-    print(generate_challenges(random.choice(CHALLENGES_MODES)))
     serial_port = serial_client()
-
-    listening_from_arduino = threading.Thread(target=read_from_arduino, args=(serial_port, HEARTS))
-    listening_from_arduino.start()
+    global GAME_STARTED
+    GAME_STARTED = True
+    return read_from_arduino(serial_port, GAME_STARTED, HEARTS)
 
 main()

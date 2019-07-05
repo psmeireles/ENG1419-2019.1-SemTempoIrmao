@@ -35,6 +35,7 @@ bool processCountdown(Process *proc) {
     // Process is over
     Serial.println("finished countdown");
     tone(BUZZER, WIN_SOUND, BUZZER_TIME);
+    tft.fillRect(TFT_COUNT_X + 120, TFT_COUNT_Y, 100, 20, TFT_BLACK);
     return true;
   }
 
@@ -42,6 +43,7 @@ bool processCountdown(Process *proc) {
     proc->lastInteraction = now;
     Serial.println("lost countdown");
     tone(BUZZER, HIT_SOUND, BUZZER_TIME);
+    tft.fillRect(TFT_COUNT_X + 120, TFT_COUNT_Y, 100, 20, TFT_BLACK);
     return true;
   }
 
@@ -157,6 +159,7 @@ bool processDistance(Process *proc) {
       Serial.println("lost distance");
       tone(BUZZER, HIT_SOUND, BUZZER_TIME);
       lastHit = millis(); 
+      tft.fillRect(TFT_DIST_X + 110, TFT_DIST_Y, 100, 120, TFT_BLACK);
       return true;
     }
   }
@@ -167,6 +170,7 @@ bool processDistance(Process *proc) {
   if (proc->duration != -1 && (now - proc->startTime) / 1000 >= proc->duration) {
     Serial.println("finished distance");
     tone(BUZZER, WIN_SOUND, BUZZER_TIME);
+    tft.fillRect(TFT_DIST_X + 110, TFT_DIST_Y, 100, 120, TFT_BLACK);
     return true;
   }
 
@@ -206,6 +210,7 @@ bool processLight(Process *proc) {
     if (lightValue > proc->params[1] || lightValue < proc->params[0]) {
       Serial.println("lost light");
       lastHit = millis(); 
+      tft.fillRect(TFT_LIGHT_X + 80, TFT_LIGHT_Y, 100, 30, TFT_BLACK);
       return true;
     }
   }
@@ -216,6 +221,7 @@ bool processLight(Process *proc) {
   if (proc->duration != -1 && (now - proc->startTime) / 1000 >= proc->duration) {
     Serial.println("finished light");
     tone(BUZZER, WIN_SOUND, BUZZER_TIME);
+    tft.fillRect(TFT_LIGHT_X + 80, TFT_LIGHT_Y, 100, 30, TFT_BLACK);
     return true;
   }
 

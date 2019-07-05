@@ -24,11 +24,10 @@ CHALLENGES_MODES = ['countdown', 'wires', 'distance', 'light', 'genius']
 FIX_MODES = ['wires', 'genius']
 PERIODIC_MODES = ['countdown', 'distance', 'light']
 WIRES_OPTIONS = ['1', '2', '3']
-WIRES_ORDER = []
 GENIUS_OPTIONS = ['1', '2', '3']
 GENIUS_ORDER = []
-DELTA_T = 600
-GOAL = 5
+DELTA_T = 120
+GOAL = 3
 COMPLETED_CHALLENGES = 0
 periodicTimer = None
 
@@ -41,15 +40,9 @@ def generate_challenges(challenge_instance):
         return CHALLENGES_MODES[0] + " "  + "%02d" % seconds + " " + "%02d" % duration
 
     elif(challenge_instance == "wires"):
-
-        for x in range(1,4):
-            global WIRES_OPTIONS
-            choice = random.choice(WIRES_OPTIONS)
-            WIRES_OPTIONS.remove(choice)
-            WIRES_ORDER.append(choice)
-        WIRES_OPTIONS = ['1', '2', '3']
-        duration = random.randint(20, 99)
-        return CHALLENGES_MODES[1] + " " + WIRES_ORDER[0] + " " + WIRES_ORDER[1] + " " + WIRES_ORDER[2]
+        global WIRES_OPTIONS
+        random.shuffle(WIRES_OPTIONS)
+        return CHALLENGES_MODES[1] + " " + WIRES_OPTIONS[0] + " " + WIRES_OPTIONS[1] + " " + WIRES_OPTIONS[2]
 
     elif (challenge_instance == "distance"):
 
@@ -66,15 +59,15 @@ def generate_challenges(challenge_instance):
         return CHALLENGES_MODES[3] + " "  + "%04d" % light_min + " " + "%04d" % light_max + " " + "%02d" % duration
 
     elif (challenge_instance == "genius"):
-
+        global GENIUS_ORDER
+        GENIUS_ORDER = []
         while(len(GENIUS_ORDER) < 5):
             element = str(random.choice(GENIUS_OPTIONS))
             if(len(GENIUS_ORDER) == 0 ):
                 GENIUS_ORDER.append(element)
-            else:
-                if(GENIUS_ORDER[-1] != element):
-                    GENIUS_ORDER.append(element)
-        light_interval = str(500)
+            elif(GENIUS_ORDER[-1] != element):
+                GENIUS_ORDER.append(element)
+        light_interval = "500"
         return CHALLENGES_MODES[4] + " "  + GENIUS_ORDER[0] + " " + GENIUS_ORDER[1] + " " + GENIUS_ORDER[2] + " " + GENIUS_ORDER[3] + " " + GENIUS_ORDER[4] + " " + light_interval 
 
     else:
@@ -98,7 +91,7 @@ def periodic_generator(SERIAL_PORT, GAME_STARTED):
             challenge = generate_challenges(random.choice(PERIODIC_MODES))
             print(challenge)
             SERIAL_PORT.write(challenge)
-        periodicTimer = Timer(time.time() + 10, periodic_generator, args = [SERIAL_PORT, GAME_STARTED])
+        periodicTimer = Timer(10, periodic_generator, args = [SERIAL_PORT, GAME_STARTED])
         periodicTimer.start()
 
 
@@ -120,17 +113,16 @@ def read_from_arduino(SERIAL_PORT , GAME_STARTED, HEARTS):
 
             if(action == "start"):
                 GAME_STARTED = True
-                COUNTDOWN = time.time()
-                TIMESUP = (COUNTDOWN + DELTA_T)
                 challenge = generate_challenges(random.choice(FIX_MODES))
                 challengeName = challenge.split(' ')[0]
                 dados = {"minutes": DELTA_T/60, "seconds": DELTA_T%60, "challenge": challengeName, "params": [str(int(x)) for x in challenge.split(' ')[1:]]}
                 response = post(endereco_start, json=dados)
-                finish = Timer(TIMESUP, finish_game, args=[SERIAL_PORT, GAME_STARTED],)
+                finish = Timer(DELTA_T, finish_game, args=[SERIAL_PORT, GAME_STARTED],)
                 finish.start()
-                periodicTimer = Timer(COUNTDOWN + 30, periodic_generator, args=[SERIAL_PORT, GAME_STARTED])
+                periodicTimer = Timer(30, periodic_generator, args=[SERIAL_PORT, GAME_STARTED])
                 periodicTimer.start()
                 SERIAL_PORT.write(challenge)
+                print(challenge)
 
             elif(action == "hit"):
                 if(HEARTS == 1 ):
@@ -149,7 +141,8 @@ def read_from_arduino(SERIAL_PORT , GAME_STARTED, HEARTS):
                     response = get(endereco_hit)
 
             elif(action == "finished"):
-                print("Completou Desafio!" + challenge_completed + "\n")
+                global COMPLETED_CHALLENGES
+                print("Completou Desafio " + challenge_completed + "!\n")
 
                 # Sending completed challenge to site
                 dados = {"challenge": challenge_completed, "correct": True}
@@ -166,16 +159,18 @@ def read_from_arduino(SERIAL_PORT , GAME_STARTED, HEARTS):
                         SERIAL_PORT.write("end")
                         SERIAL_PORT.disconnect
                         continue
-                    
-                reply_to_arduino = generate_challenges(random.choice(mode))
-                print(reply_to_arduino)
+                    else:
+                        reply_to_arduino = generate_challenges(random.choice(mode))
+                        print(reply_to_arduino)
 
-                # Sending new challenge to site
-                address = endereco_new_fix_challenge if challenge_completed in FIX_MODES else endereco_new_periodic_challenge
-                dados = {"challenge": challenge_completed, "params": [str(int(x)) for x in reply_to_arduino.split(' ')[1:]]}
-                response = post(address, json=dados)
+                        # Sending new challenge to site
+                        address = endereco_new_fix_challenge
+                        new_challenge = reply_to_arduino.split(' ')[0]
+                        params = [str(int(x)) for x in reply_to_arduino.split(' ')[1:]]
+                        dados = {"challenge": new_challenge, "params": params}
+                        response = post(address, json=dados)
 
-                SERIAL_PORT.write(reply_to_arduino)
+                        SERIAL_PORT.write(reply_to_arduino)
 
             elif(action == "lost"): # Only periodic challenges send lost
                 print("Nao Completou Desafio!")

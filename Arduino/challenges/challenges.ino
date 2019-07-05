@@ -30,9 +30,8 @@ void loop() {
   else if (text.startsWith("wires")) {
     int pinA = text.substring(6, 7).toInt();
     int pinB = text.substring(8, 9).toInt();
-    int pinC = text.substring(10, 11).toInt();
-    int duration = text.substring(12, 14).toInt();
-    initializeWires(pinA, pinB, pinC, duration);
+    int pinC = text.substring(10).toInt();
+    initializeWires(pinA, pinB, pinC);
   }
   else if (text.startsWith("distance")) {
     int minDist = text.substring(9, 11).toInt();

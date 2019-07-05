@@ -116,12 +116,12 @@ bool checkWires(Process *proc) {
   return false;
 }
 
-void initializeWires(int pinA, int pinB, int pinC, int duration) {
+void initializeWires(int pinA, int pinB, int pinC) {
   Process *wiresProc = (Process*) malloc(sizeof(Process));
   wiresProc->startTime = millis();
   wiresProc->lastInteraction = wiresProc->startTime;
   wiresProc->interval = -1;
-  wiresProc->duration = duration;
+  wiresProc->duration = -1;
   wiresProc->params = (int *) malloc(3 * sizeof(int));
   wiresProc->params[0] = pinA;
   wiresProc->params[1] = pinB;

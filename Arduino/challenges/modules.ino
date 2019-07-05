@@ -230,12 +230,13 @@ bool processGenius(Process *proc) {
   int colors[3] = {LED_R, LED_Y, LED_G};
 
   // Blinking LEDS
-  if (((now - proc->startTime)) % proc->interval < 10 && proc->params[6] != 5) {
+  if (((now - proc->startTime)) % proc->interval < 10 && proc->params[6] != 6) {
     int ledIndex = proc->params[6];
     digitalWrite(colors[0], LOW);
     digitalWrite(colors[1], LOW);
     digitalWrite(colors[2], LOW);
-    digitalWrite(colors[proc->params[ledIndex]], HIGH);
+    if(proc->params[6] != 5)
+      digitalWrite(colors[proc->params[ledIndex]], HIGH);
     //Serial.println("Acendeu o " + String(colors[proc->params[ledIndex]]));
     proc->params[6]++; 
   }

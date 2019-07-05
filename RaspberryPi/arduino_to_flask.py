@@ -49,7 +49,7 @@ def generate_challenges(challenge_instance):
             WIRES_ORDER.append(choice)
         WIRES_OPTIONS = ['1', '2', '3']
         duration = random.randint(20, 99)
-        return CHALLENGES_MODES[1] + " " + WIRES_ORDER[0] + " " + WIRES_ORDER[1] + " " + WIRES_ORDER[2] + " " + "%02d" % duration
+        return CHALLENGES_MODES[1] + " " + WIRES_ORDER[0] + " " + WIRES_ORDER[1] + " " + WIRES_ORDER[2]
 
     elif (challenge_instance == "distance"):
 

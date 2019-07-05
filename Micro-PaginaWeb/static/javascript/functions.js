@@ -6,33 +6,30 @@ var imageHeight = 60;
 var imageWidth = 60;
 var currentLevel = 1;
 
-function createNewFixedChallenge(challengeName)
+function createNewFixedChallenge(challengeName,wireList)
 {
+    wireList=wireList.map(function(wire)
+    {
+        if(wire=="1")
+        return " Vermelho" //fio 1
+        else if(wire=="2")
+            return " Verde" //fio 2
+        else if(wire=="3")
+        return " Azul" //fio 3
+    })
     var newFixedChallenge = document.createElement("h4");
     var challengeImage = document.createElement("img");
     var additionalImage = document.createElement("img");
     if(challengeName == "wires")
     {
-        newFixedChallenge.innerHTML = "Coloque os fios na seguinte ordem e aperte o botão para confirmar: Vermelho-Azul, Branco-Marrom, Verde-Amarelo";
+        newFixedChallenge.innerHTML = "Coloque os fios na seguinte ordem e aperte o botão para confirmar:" + wireList[0]+"-Azul,"+wireList[1]+"-Marrom,"+ wireList[1] +"-Amarelo";
         challengeImage.src= "static/images/wires.png";
         additionalImage.src= "static/images/button.png";
 
     }
-    else if(challengeName == "distance")
-    {
-        newFixedChallenge.innerHTML = "Mantenha sua mão entre 2 e 3 centímetros do sensor de distância";
-        challengeImage.src= "static/images/distance.png";
-        additionalImage.src= "static/images/hand.png";
-    }
-    else if(challengeName == "light")
-    {
-        newFixedChallenge.innerHTML = "Faça o nível de luz no sensor ficar entre 100 e 300";
-        challengeImage.src= "static/images/lightSensor.png";
-        additionalImage.src= "static/images/hand.png";
-    }
     else if(challengeName == "genius")
     {
-        newFixedChallenge.innerHTML = "Observe a sequência de LEDs e aperte os botões correspondentes";
+        newFixedChallenge.innerHTML = "Observe os LEDs e aperte os botões correspondentes!";
         challengeImage.src= "static/images/led.png";
         additionalImage.src= "static/images/button.png";
 
@@ -44,11 +41,49 @@ function createNewFixedChallenge(challengeName)
     additionalImage.width = imageWidth;
     newFixedChallenge.appendChild(challengeImage);
     newFixedChallenge.appendChild(additionalImage);
-    newFixedChallenge.id="fixedChallengeId"+ String(numberFixedChallenge);
+    //newFixedChallenge.id="fixedChallengeId"+ String(numberFixedChallenge);
+    newFixedChallenge.id=challengeName;
     numberFixedChallenge = numberFixedChallenge + 1;
     document.getElementById("fixedChallenges").appendChild(newFixedChallenge);
 }
 
+function createNewPeriodicChallenge(challengeName,params)
+{ 
+
+    var newPeriodicChallenge = document.createElement("h4");
+    var challengeImage = document.createElement("img");
+    var additionalImage = document.createElement("img");
+    additionalImage.src = "";
+    if(challengeName == "distance")
+    {
+        newPeriodicChallenge.innerHTML = "Use o sensor de distância para ficar entre " +params[0]+ " e "+ params[1]+ " por " +params[2] +"s!";
+        challengeImage.src= "static/images/distance.png";
+        additionalImage.src= "static/images/hand.png";
+    }
+    else if(challengeName == "light")
+    {
+        newPeriodicChallenge.innerHTML = "Use o sensor de luz para ficar entre " +params[0]+ " e "+ params[1] + " por " +params[2]+"s!";
+        challengeImage.src= "static/images/lightSensor.png";
+        additionalImage.src= "static/images/hand.png";
+    }
+    else if(challengeName == "countdown")
+    {
+        newPeriodicChallenge.innerHTML = "Pressione o botão na tela a cada" + params[0]+ "s por " + params[1] +"s";
+        challengeImage.src= "static/images/tft.png";
+
+    }
+    newPeriodicChallenge.style.fontSize="20px";
+    challengeImage.height = imageHeight;
+    challengeImage.width = imageWidth;
+    additionalImage.height = imageHeight;
+    additionalImage.width = imageWidth;
+    newPeriodicChallenge.appendChild(challengeImage);
+    if(additionalImage.src !="")
+        newPeriodicChallenge.appendChild(additionalImage);
+    newPeriodicChallenge.id=challengeName;
+    numberPeriodicChallenge = numberPeriodicChallenge + 1;
+    document.getElementById("periodicChallenges").appendChild(newPeriodicChallenge);
+}
 
 function startTimer(minutes,seconds)
 {
@@ -78,38 +113,11 @@ function startTimer(minutes,seconds)
 }
 
 
-function createNewPeriodicChallenge(challengeName)
-{ 
-    var newPeriodicChallenge = document.createElement("h4");
-    var challengeImage = document.createElement("img");
-    if(challengeName == "tft")
-    {
-        newPeriodicChallenge.innerHTML = "Pressione o botão na tela a cada 10 segundos por 30 segundos";
-        challengeImage.src= "static/images/tft.png";
 
-    }
-    else if(challengeName == "distance")
-    {
-        newPeriodicChallenge.innerHTML = "Mantenha sua mão entre 2 e 3 centímetros do sensor de distância a cada 10 segundos";
-        challengeImage.src= "static/images/distance.png";
-    }
-    else if(challengeName == "light")
-    {
-        newPeriodicChallenge.innerHTML = "Faça o nível de luz no sensor ficar entre 100 e 300 a cada 10 segundos por 30 segundos";
-        challengeImage.src= "static/images/lightSensor.png";
-    }
-    newPeriodicChallenge.style.fontSize="20px";
-    challengeImage.height = imageHeight;
-    challengeImage.width = imageWidth;
-    newPeriodicChallenge.appendChild(challengeImage);
-    newPeriodicChallenge.id="periodicChallengeId"+ String(numberPeriodicChallenge);
-    numberPeriodicChallenge = numberPeriodicChallenge + 1;
-    document.getElementById("periodicChallenges").appendChild(newPeriodicChallenge);
-}
 
-function correctFixedChallenge(isCorrect)
+function correctFixedChallenge(challengeName,isCorrect)
 {    
-    var challenge = document.getElementById("fixedChallengeId" + String(numberFixedChallenge-1));
+    var challenge = document.getElementById(challengeName);
     if(!isCorrect)
     {
         challenge.style.color="red";
@@ -117,7 +125,7 @@ function correctFixedChallenge(isCorrect)
     else
     {	
         challenge.style.color="green";
-        challengeCleared("fixedChallengeId",String(numberFixedChallenge-1))
+        challengeCleared(challengeName)
     }
 }
 
@@ -151,34 +159,35 @@ function loseLife()
 function gameOver(hasWon)
 {
     clearInterval(timer);
-    var endMessage = document.getElementById("textLifes");
+    var endMessage = document.getElementById("hearts");
     if(!hasWon)
     {
-        endMessage.innerHTML= "Você perdeu! Clique aqui para tentar novamente."
+        endMessage.style.fontFamily="Game";
+        endMessage.innerHTML= "Você perdeu! Aperte o botão para jogar outra vez"
         endMessage.style.color="red";
-		endMessage.onclick = restartlevel;
-		endMessage.style.cursor = "pointer";
-		endMessage.onmoueover = changeColor(endMessage,'darkred');
-		endMessage.onmouseout = changeColor(endMessage,'red');
+		//endMessage.onclick = restartlevel;
+		//endMessage.style.cursor = "pointer";
+		//endMessage.onmoueover = changeColor(endMessage,'darkred');
+		//endMessage.onmouseout = changeColor(endMessage,'red');
 	}
     else if(hasWon)
     {
-        endMessage.innerHTML= "Você ganhou! Próximo nível começa em 3 segundos"
+        endMessage.innerHTML= "Você ganhou! Aperte o botão para jogar outra vez"
         endMessage.style.color="green";
-		setTimeout(
-			function ()
-			{
-				restartlevel();
-			},3000);
+		// setTimeout(
+		// 	function ()
+		// 	{
+		// 		restartlevel();
+		// 	},3000);
     }
 }
 
-function challengeCleared(challengeType,challengeNumber)
+function challengeCleared(challengeName)
 {
     setTimeout(
         function ()
         {
-            var clearedChallenge=document.getElementById(challengeType+challengeNumber);
+            var clearedChallenge=document.getElementById(challengeName);
             clearedChallenge.parentNode.removeChild(clearedChallenge);
         },3000);
 }
@@ -203,7 +212,7 @@ function restartlevel()
 	}
 	numberFixedChallenge = 0;
 	numberPeriodicChallenge = 0;
-	startTimer(1,30);
+	startTimer(2,00);
 }
 
 

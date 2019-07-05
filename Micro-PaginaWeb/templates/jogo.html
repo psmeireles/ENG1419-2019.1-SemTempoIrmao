@@ -15,7 +15,8 @@
 		<h3 style="  text-align:center" >Tempo Restante</h3>
         <h1 id="clock">02:00</h1>
 
-      	<h2 id="textLifes" style="color: white; font-family:Game ; text-align:center; font-size:20px" >Vidas: <span id="hearts" style="color: red"> ♥ ♥ ♥ </span></h2> 
+		  <!-- <h2 id="textLifes" style="color: white;text-align:center; font-size:20px" >Vidas: <span id="hearts" style="color: red"> ♥ ♥ ♥ </span></h2>  -->
+		<h2 style="text-align:center; font-size:20px;color: red" id="hearts" > ♥ ♥ ♥ </h2> 
 
       	<div class="container">
       		<div class="row">
@@ -44,14 +45,14 @@
 
 
 		<!--BOTOES PARA DEBUGGAR SOCKET -->
-		<button onclick="socketStart()">socketStart</button>
+		<!-- <button onclick="socketStart()">socketStart</button>
 		<button onclick="socketNewFixedChallenge()">socketNewFixedChallenge</button>
 		<button onclick="socketCorrectFixedChallenge()">socketCorrectFixedChallenge</button>
 		<button onclick="socketNewPeriodicChallenge()">socketNewPeriodicChallenge</button>
 		<button onclick="socketCorrectPeriodicChallenge()">socketCorrectPeriodicChallenge</button>
 		<button onclick="socketLoseLife()">socketLoseLife(</button>
 		<button onclick="socketGameOver()">socketGameOver</button>
-		<button onclick="restartlevel()">restartlevel</button>
+		<button onclick="restartlevel()">restartlevel</button> -->
 
     <!-- <button onclick="comecaTimer()">Click me</button> -->
 		<footer>
@@ -69,25 +70,27 @@
 				var socket = io();
 				socket.on('start',function(data)
 				{
-					createNewFixedChallenge(data.challenge);
+					createNewFixedChallenge(data.challenge,data.params);
 					startTimer(data.minutes, data.seconds);
 				}
 				);
+
 				socket.on('newFixedChallenge',function(data)
 				{
-					createNewFixedChallenge(data);
+					createNewFixedChallenge(data.challenge,data.params);
 				});
-				socket.on('correctFixedChallenge',function(data)
-				{
-					debugger
-					console.log(data)
-					correctFixedChallenge(data);
-				});
+
 				socket.on('newPeriodicChallenge',function(data)
 				{
-					createNewPeriodicChallenge(data);
+					createNewPeriodicChallenge(data.challenge,data.params);
 				}
 				);
+
+				socket.on('correctFixedChallenge',function(data)
+				{
+					correctFixedChallenge(data.challenge,data.correct);
+				});
+
 				socket.on('correctPeriodicChallenge',function(data)
 				{
 					debugger
@@ -99,6 +102,7 @@
 					correctPeriodicChallenge(data[0],data[1]);
 				}
 				);
+
 				socket.on('gameOver',function(data)
 				{
 					gameOver(data);
@@ -112,46 +116,46 @@
 				);
 
 				//Funcao de inicio do Jogo
-				function gameStart()
-				{
-    				socket.emit('comecou');
-				}
+				// function gameStart()
+				// {
+    			// 	socket.emit('comecou');
+				// }
 
-				//Funcoes de teste do socket -> NAO VAO EXISIR NA APLICACAO REAL!
-				function socketStart()
-				{
-    				socket.emit('start');
-				}
-				function socketNewFixedChallenge()
-				{
-    				socket.emit('newFixedChallenge');
-				}
-				function socketCorrectFixedChallenge()
-				{
-    				socket.emit('correctFixedChallenge');
-				}
-				function socketNewPeriodicChallenge()
-				{
-    				socket.emit('newPeriodicChallenge');
-				}
-				function socketCorrectPeriodicChallenge()
-				{
-    				socket.emit('correctPeriodicChallenge');
-				}
+				// //Funcoes de teste do socket -> NAO VAO EXISIR NA APLICACAO REAL!
+				// function socketStart()
+				// {
+    			// 	socket.emit('start');
+				// }
+				// function socketNewFixedChallenge()
+				// {
+    			// 	socket.emit('newFixedChallenge');
+				// }
+				// function socketCorrectFixedChallenge()
+				// {
+    			// 	socket.emit('correctFixedChallenge');
+				// }
+				// function socketNewPeriodicChallenge()
+				// {
+    			// 	socket.emit('newPeriodicChallenge');
+				// }
+				// function socketCorrectPeriodicChallenge()
+				// {
+    			// 	socket.emit('correctPeriodicChallenge');
+				// }
 				
-				function socketLoseLife()
-				{
-    				socket.emit('loseLife');
-				}
-				function socketGameOver()
-				{
-    				socket.emit('gameOver');
-				}
+				// function socketLoseLife()
+				// {
+    			// 	socket.emit('loseLife');
+				// }
+				// function socketGameOver()
+				// {
+    			// 	socket.emit('gameOver');
+				// }
 				// setInterval(function()
 				// {
 				// 	socket.emit("leitura","tem?")
 				// },300);
-				window.onload=gameStart;
+				//window.onload=gameStart;
 			</script>
 			
 

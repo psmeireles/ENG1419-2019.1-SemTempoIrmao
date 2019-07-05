@@ -77,29 +77,23 @@
 
 				socket.on('newFixedChallenge',function(data)
 				{
-					createNewFixedChallenge(data.challenge,data.params);
+					createNewFixedChallenge(data.challenge, data.params);
 				});
 
 				socket.on('newPeriodicChallenge',function(data)
 				{
-					createNewPeriodicChallenge(data.challenge,data.params);
+					createNewPeriodicChallenge(data.challenge, data.params);
 				}
 				);
 
 				socket.on('correctFixedChallenge',function(data)
 				{
-					correctFixedChallenge(data.challenge,data.correct);
+					correctFixedChallenge(data.challenge, data.correct);
 				});
 
 				socket.on('correctPeriodicChallenge',function(data)
-				{
-					debugger
-					console.log(data) 
-					//data = data.toString(); 
-					console.log(typeof(data)) 
-					data = data.split(" ");
-					console.log(data)
-					correctPeriodicChallenge(data[0],data[1]);
+				{;
+					correctPeriodicChallenge(data.challenge, data.correct);
 				}
 				);
 

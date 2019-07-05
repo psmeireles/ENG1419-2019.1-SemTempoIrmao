@@ -11,9 +11,9 @@ function createNewFixedChallenge(challengeName,wireList)
     wireList=wireList.map(function(wire)
     {
         if(wire=="1")
-        return " Vermelho" //fio 1
+        return " Verde" //fio 1
         else if(wire=="2")
-            return " Verde" //fio 2
+            return " Amarelo" //fio 2
         else if(wire=="3")
         return " Azul" //fio 3
     })
@@ -22,7 +22,7 @@ function createNewFixedChallenge(challengeName,wireList)
     var additionalImage = document.createElement("img");
     if(challengeName == "wires")
     {
-        newFixedChallenge.innerHTML = "Coloque os fios na seguinte ordem e aperte o botão para confirmar:" + wireList[0]+"-Azul,"+wireList[1]+"-Marrom,"+ wireList[1] +"-Amarelo";
+        newFixedChallenge.innerHTML = "Coloque os fios na seguinte ordem e aperte o botão para confirmar:" + wireList[0]+"-Cinza,"+wireList[1]+"-Vermelho,"+ wireList[2] +"-Laranja";
         challengeImage.src= "static/images/wires.png";
         additionalImage.src= "static/images/button.png";
 
@@ -53,24 +53,27 @@ function createNewPeriodicChallenge(challengeName,params)
     var newPeriodicChallenge = document.createElement("h4");
     var challengeImage = document.createElement("img");
     var additionalImage = document.createElement("img");
-    additionalImage.src = "";
+    var hasAdditionalImage = false;
     if(challengeName == "distance")
     {
-        newPeriodicChallenge.innerHTML = "Use o sensor de distância para ficar entre " +params[0]+ " e "+ params[1]+ " por " +params[2] +"s!";
+        newPeriodicChallenge.innerHTML = "Use o sensor de distância para ficar entre " + params[0]+ " e " + params[1]+ " por " +params[2] +" segundos!";
         challengeImage.src= "static/images/distance.png";
         additionalImage.src= "static/images/hand.png";
+        hasAdditionalImage = true;
     }
     else if(challengeName == "light")
     {
-        newPeriodicChallenge.innerHTML = "Use o sensor de luz para ficar entre " +params[0]+ " e "+ params[1] + " por " +params[2]+"s!";
+        newPeriodicChallenge.innerHTML = `Use o sensor de luz para ficar entre ${params[0]} e ${params[1]} por ${params[2]} segundos!`;
         challengeImage.src= "static/images/lightSensor.png";
         additionalImage.src= "static/images/hand.png";
+        hasAdditionalImage = true;
+
     }
     else if(challengeName == "countdown")
     {
-        newPeriodicChallenge.innerHTML = "Pressione o botão na tela a cada" + params[0]+ "s por " + params[1] +"s";
+        newPeriodicChallenge.innerHTML = "Pressione o botão na tela a cada " + params[0]+ " segundos por " + params[1] +" segundos";
         challengeImage.src= "static/images/tft.png";
-
+       
     }
     newPeriodicChallenge.style.fontSize="20px";
     challengeImage.height = imageHeight;
@@ -78,7 +81,7 @@ function createNewPeriodicChallenge(challengeName,params)
     additionalImage.height = imageHeight;
     additionalImage.width = imageWidth;
     newPeriodicChallenge.appendChild(challengeImage);
-    if(additionalImage.src !="")
+    if(hasAdditionalImage)
         newPeriodicChallenge.appendChild(additionalImage);
     newPeriodicChallenge.id=challengeName;
     numberPeriodicChallenge = numberPeriodicChallenge + 1;
@@ -118,27 +121,29 @@ function startTimer(minutes,seconds)
 function correctFixedChallenge(challengeName,isCorrect)
 {    
     var challenge = document.getElementById(challengeName);
-    if(!isCorrect)
+    console.log(isCorrect)
+    if(isCorrect)
     {
-        challenge.style.color="red";
+        challenge.style.color="green";
+        challengeCleared(challengeName)
     }
     else
     {	
-        challenge.style.color="green";
-        challengeCleared(challengeName)
+        challenge.style.color="red";
+       
     }
 }
 
 
 
-function correctPeriodicChallenge(numChallenge,isCorrect)
+function correctPeriodicChallenge(challengeName,isCorrect)
 {
-    var periodicChallenge = document.getElementById("periodicChallengeId"+ String(numChallenge));
+    var periodicChallenge = document.getElementById(challengeName);
 	if(isCorrect)
-		periodicChallenge.style.color="red";
-	else if(!isCorrect)
-        periodicChallenge.style.color="green";
-    challengeCleared("periodicChallengeId",String(numChallenge));
+		periodicChallenge.style.color="green";
+	else
+        periodicChallenge.style.color="red";
+    challengeCleared(challengeName);
     
 }
 

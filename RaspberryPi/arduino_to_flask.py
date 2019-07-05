@@ -29,6 +29,7 @@ GENIUS_ORDER = []
 DELTA_T = 120
 GOAL = 3
 COMPLETED_CHALLENGES = 0
+GAME_STARTED = False
 periodicTimer = None
 
 def generate_challenges(challenge_instance):
@@ -49,8 +50,8 @@ def generate_challenges(challenge_instance):
         distance_max = random.randint(1, 50)
         distance_min = random.randint(1, distance_max)
         duration = random.randint(20, 99)
-        return CHALLENGES_MODES[2] + " "  + "%02d" % distance_min + " " + "%02d" % distance_max + " " + "%02d" % duration
-
+        return CHALLENGES_MODES[2] + " "  + "%02d" % distance_min + " " + "%02d" % distance_max + " " + "%02d" % duration
+        
     elif (challenge_instance == "light"):
 
         light_max = random.randint(50,100)
@@ -73,8 +74,9 @@ def generate_challenges(challenge_instance):
     else:
         print("Modo de jogo nao encontrado!")
 
-def finish_game(SERIAL_PORT, GAME_STARTED):
+def finish_game(SERIAL_PORT):
     print("FINISH")
+    global GAME_STARTED
     GAME_STARTED = False
     response = post(endereco_end, json={"win": COMPLETED_CHALLENGES == GOAL})
     SERIAL_PORT.connect()
@@ -83,21 +85,31 @@ def finish_game(SERIAL_PORT, GAME_STARTED):
     SERIAL_PORT.write(reply_to_arduino)
     return
 
-def periodic_generator(SERIAL_PORT, GAME_STARTED):
+def periodic_generator(SERIAL_PORT):
     global periodicTimer
     if GAME_STARTED:
-        if random.randint(1, 10) > 7:
+        if random.randint(1, 10) > 7 or True:
             SERIAL_PORT.connect()
             challenge = generate_challenges(random.choice(PERIODIC_MODES))
             print(challenge)
+            print('Gerando novo periodico')
+            new_challenge = challenge.split(' ')[0]
+            params = challenge.split(' ')[1:]
+            for item in params:
+                print(item)
+            params = [str(int(x)) for x in params]
+            dados = {"challenge": new_challenge, "params": params}
+            response = post(endereco_new_periodic_challenge, json=dados)
             SERIAL_PORT.write(challenge)
-        periodicTimer = Timer(10, periodic_generator, args = [SERIAL_PORT, GAME_STARTED])
+            print('Gerou novo periodico')
+        periodicTimer = Timer(10, periodic_generator, args = [SERIAL_PORT])
         periodicTimer.start()
 
 
 
 
-def read_from_arduino(SERIAL_PORT , GAME_STARTED, HEARTS):
+def read_from_arduino(SERIAL_PORT, HEARTS):
+    global GAME_STARTED
     while (GAME_STARTED):
         SERIAL_PORT.connect()
         reply = SERIAL_PORT.read()
@@ -117,9 +129,9 @@ def read_from_arduino(SERIAL_PORT , GAME_STARTED, HEARTS):
                 challengeName = challenge.split(' ')[0]
                 dados = {"minutes": DELTA_T/60, "seconds": DELTA_T%60, "challenge": challengeName, "params": [str(int(x)) for x in challenge.split(' ')[1:]]}
                 response = post(endereco_start, json=dados)
-                finish = Timer(DELTA_T, finish_game, args=[SERIAL_PORT, GAME_STARTED],)
+                finish = Timer(DELTA_T, finish_game, args=[SERIAL_PORT],)
                 finish.start()
-                periodicTimer = Timer(30, periodic_generator, args=[SERIAL_PORT, GAME_STARTED])
+                periodicTimer = Timer(5, periodic_generator, args=[SERIAL_PORT])
                 periodicTimer.start()
                 SERIAL_PORT.write(challenge)
                 print(challenge)
@@ -190,9 +202,6 @@ def read_from_arduino(SERIAL_PORT , GAME_STARTED, HEARTS):
                     response = get(endereco_hit)
                     dados = {"challenge": challenge_completed, "correct": False}
                     response = post(endereco_periodic_challenge_completed, json=dados)
-                    reply_to_arduino = generate_challenges(random.choice(PERIODIC_MODES))
-                    print(reply_to_arduino)
-                    SERIAL_PORT.write(reply_to_arduino)
 
             else:
                 print("arduino: " + reply)
@@ -207,6 +216,6 @@ def main():
     serial_port = serial_client()
     global GAME_STARTED
     GAME_STARTED = True
-    return read_from_arduino(serial_port, GAME_STARTED, HEARTS)
+    return read_from_arduino(serial_port, HEARTS)
 
 main()

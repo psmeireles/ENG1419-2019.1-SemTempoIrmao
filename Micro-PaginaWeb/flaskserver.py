@@ -37,6 +37,7 @@ def newFixedChallenge():
 @app.route('/newPeriodicChallenge' , methods=['POST'])
 def newPeriodicChallenge():
     content = request.json
+    print(content)
     socketio.emit("newPeriodicChallenge",content)
     return "New Periodic Challenge!"
 
@@ -51,7 +52,7 @@ def correctFixedChallenge():
     content = request.json
     print(content)
     socketio.emit("correctFixedChallenge", content)
-    return "ok"
+    return "Fixed Challenge Corrected"
 
 
 #Evento que informa que o player nao cumpriu um dos desafios periodicos.Pagina usa essa informaçao para decrementar uma vida do player.
@@ -59,8 +60,8 @@ def correctFixedChallenge():
 @app.route('/correctPeriodicChallenge', methods=['POST'])
 def correctPeriodicChallenge():
     content = request.json
-    socketio.emit("correctPeriodicChallenge", content['challenge'] + " true")
-    return "ok"
+    socketio.emit("correctPeriodicChallenge", content)
+    return "Periodic Challenge Corrected"
 
 
 @app.route('/hit')

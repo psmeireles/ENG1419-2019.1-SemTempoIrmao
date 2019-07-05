@@ -70,8 +70,9 @@
 				var socket = io();
 				socket.on('start',function(data)
 				{
-					createNewFixedChallenge(data.challenge,data.params);
 					startTimer(data.minutes, data.seconds);
+					createNewFixedChallenge(data.challenge,data.params);
+					
 				}
 				);
 
@@ -105,6 +106,7 @@
 				
 				socket.on('loseLife',function()
 				{
+					console.log("what");
 					loseLife();
 				}
 				);

@@ -23,7 +23,7 @@ void loop() {
 
   button.process();
 
-  if(!text.equals("")){
+  if(!text.equals("end") && !text.equals("")){
     tone(BUZZER, 750, BUZZER_TIME);
   }
   

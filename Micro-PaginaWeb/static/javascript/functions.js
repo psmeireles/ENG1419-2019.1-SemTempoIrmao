@@ -1,13 +1,31 @@
-var numberFixedChallenge = 0;
-var numberPeriodicChallenge = 0;
+// var numberFixedChallenge = 0;
+// var numberPeriodicChallenge = 0;
 var numberLifes = 3;
 var timer;
 var imageHeight = 60;
 var imageWidth = 60;
-var currentLevel = 1;
+
+
+function restartChallenges()
+{
+    var lifesMessage = document.getElementById("hearts");
+    lifesMessage.innerHTML = "♥ ♥ ♥ ";
+	var fixedChallenges = document.getElementById("fixedChallenges");
+	while (fixedChallenges.firstChild) 
+	{
+		fixedChallenges.firstChild.remove();
+	}
+	var periodicChallenges = document.getElementById("periodicChallenges");
+	while (periodicChallenges.firstChild) 
+	{
+		periodicChallenges.firstChild.remove();
+	}
+    
+}
 
 function createNewFixedChallenge(challengeName,wireList)
 {
+
     wireList=wireList.map(function(wire)
     {
         if(wire=="1")
@@ -41,9 +59,8 @@ function createNewFixedChallenge(challengeName,wireList)
     additionalImage.width = imageWidth;
     newFixedChallenge.appendChild(challengeImage);
     newFixedChallenge.appendChild(additionalImage);
-    //newFixedChallenge.id="fixedChallengeId"+ String(numberFixedChallenge);
     newFixedChallenge.id=challengeName;
-    numberFixedChallenge = numberFixedChallenge + 1;
+    //numberFixedChallenge = numberFixedChallenge + 1;
     document.getElementById("fixedChallenges").appendChild(newFixedChallenge);
 }
 
@@ -84,12 +101,13 @@ function createNewPeriodicChallenge(challengeName,params)
     if(hasAdditionalImage)
         newPeriodicChallenge.appendChild(additionalImage);
     newPeriodicChallenge.id=challengeName;
-    numberPeriodicChallenge = numberPeriodicChallenge + 1;
+   // numberPeriodicChallenge = numberPeriodicChallenge + 1;
     document.getElementById("periodicChallenges").appendChild(newPeriodicChallenge);
 }
 
 function startTimer(minutes,seconds)
 {
+    restartChallenges();
     var endCountdown = new Date();
     endCountdown.setTime(endCountdown.getTime() + (minutes * 60 * 1000));
     endCountdown.setSeconds(endCountdown.getSeconds() + seconds + 1);
@@ -170,21 +188,13 @@ function gameOver(hasWon)
         endMessage.style.fontFamily="Game";
         endMessage.innerHTML= "Você perdeu! Aperte o botão para jogar outra vez"
         endMessage.style.color="red";
-		//endMessage.onclick = restartlevel;
-		//endMessage.style.cursor = "pointer";
-		//endMessage.onmoueover = changeColor(endMessage,'darkred');
-		//endMessage.onmouseout = changeColor(endMessage,'red');
 	}
     else if(hasWon)
     {
+        endMessage.style.fontFamily="Game";
         endMessage.innerHTML= "Você ganhou! Aperte o botão para jogar outra vez"
-        endMessage.style.color="green";
-		// setTimeout(
-		// 	function ()
-		// 	{
-		// 		restartlevel();
-		// 	},3000);
     }
+    firstGame = false;
 }
 
 function challengeCleared(challengeName)
@@ -198,27 +208,7 @@ function challengeCleared(challengeName)
 }
 
 
-function changeColor(elem,color)
-{
-	endMessage.style.color=color;
-}
 
-function restartlevel()
-{
-	const fixedChallenges = document.getElementById("fixedChallenges");
-	while (fixedChallenges.firstChild) 
-	{
-		fixedChallenges.firstChild.remove();
-	}
-	const periodicChallenges = document.getElementById("periodicChallenges");
-	while (periodicChallenges.firstChild) 
-	{
-		periodicChallenges.firstChild.remove();
-	}
-	numberFixedChallenge = 0;
-	numberPeriodicChallenge = 0;
-	startTimer(2,00);
-}
 
 
 //window.onload=startTimer();

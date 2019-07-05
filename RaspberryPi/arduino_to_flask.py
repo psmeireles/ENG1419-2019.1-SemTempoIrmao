@@ -3,6 +3,11 @@ import random
 from requests import *
 from threading import Timer
 from serial_class import *
+from pymongo import MongoClient, ASCENDING, DESCENDING
+
+cliente = MongoClient("localhost", 27017)
+banco = cliente["SemTempoIrmao"]
+colecao = banco["Games"]
 
 random.seed(a=None)
 endereco = "http://127.0.0.1"
@@ -32,18 +37,30 @@ GOAL = 3
 COMPLETED_CHALLENGES = 0
 GAME_STARTED = False
 periodicTimer = None
+finishTimer = None
+gameData = {"time": {}, "challenges": [], "finished": False}
 
 def generate_challenges(challenge_instance):
-
+    global gameData
+    challenge = {
+        "name": challenge_instance,
+        "time_issued": time.time(),
+        "params": [],
+        "completed": False
+    }
     if(challenge_instance == "countdown"):
 
         duration = random.randint(15, 60) # dois digitos
         seconds = random.randint(5, duration)
+        challenge["params"] = [seconds, duration]
+        gameData["challenges"].append(challenge)
         return CHALLENGES_MODES[0] + " "  + "%02d" % seconds + " " + "%02d" % duration
 
     elif(challenge_instance == "wires"):
         global WIRES_OPTIONS
         random.shuffle(WIRES_OPTIONS)
+        challenge["params"] = WIRES_OPTIONS[:]
+        gameData["challenges"].append(challenge)
         return CHALLENGES_MODES[1] + " " + WIRES_OPTIONS[0] + " " + WIRES_OPTIONS[1] + " " + WIRES_OPTIONS[2]
 
     elif (challenge_instance == "distance"):
@@ -51,6 +68,8 @@ def generate_challenges(challenge_instance):
         distance_max = random.randint(1, 50)
         distance_min = random.randint(1, distance_max)
         duration = random.randint(20, 99)
+        challenge["params"] = [distance_min, distance_max, duration]
+        gameData["challenges"].append(challenge)
         return CHALLENGES_MODES[2] + " "  + "%02d" % distance_min + " " + "%02d" % distance_max + " " + "%02d" % duration
         
     elif (challenge_instance == "light"):
@@ -58,6 +77,8 @@ def generate_challenges(challenge_instance):
         light_max = random.randint(50,100)
         light_min = random.randint(0, light_max)
         duration = random.randint(5, 30)
+        challenge["params"] = [light_min, light_max, duration]
+        gameData["challenges"].append(challenge)
         return CHALLENGES_MODES[3] + " "  + "%04d" % light_min + " " + "%04d" % light_max + " " + "%02d" % duration
 
     elif (challenge_instance == "genius"):
@@ -70,6 +91,9 @@ def generate_challenges(challenge_instance):
             elif(GENIUS_ORDER[-1] != element):
                 GENIUS_ORDER.append(element)
         light_interval = "500"
+        challenge["params"] = GENIUS_ORDER[:]
+        challenge["params"].append(light_interval)
+        gameData["challenges"].append(challenge)
         return CHALLENGES_MODES[4] + " "  + GENIUS_ORDER[0] + " " + GENIUS_ORDER[1] + " " + GENIUS_ORDER[2] + " " + GENIUS_ORDER[3] + " " + GENIUS_ORDER[4] + " " + light_interval 
 
     else:
@@ -78,7 +102,11 @@ def generate_challenges(challenge_instance):
 def finish_game(SERIAL_PORT):
     print("FINISH")
     global GAME_STARTED
+    global gameData
     GAME_STARTED = False
+    gameData['finished'] = COMPLETED_CHALLENGES == GOAL
+    colecao.insert(gameData)
+    gameData = {"time": {}, "challenges": [], "finished": False}
     response = post(endereco_end, json={"win": COMPLETED_CHALLENGES == GOAL})
     SERIAL_PORT.connect()
     reply_to_arduino = "end"
@@ -89,18 +117,19 @@ def finish_game(SERIAL_PORT):
 def periodic_generator(SERIAL_PORT):
     global periodicTimer
     global CURRENT_PERIODICS
+    global gameData
     if GAME_STARTED:
         SERIAL_PORT.connect()
         challenge = generate_challenges(random.choice(PERIODIC_MODES))
-        print(challenge)
         new_challenge = challenge.split(' ')[0]
         if new_challenge not in CURRENT_PERIODICS:
             CURRENT_PERIODICS.append(new_challenge)
             params = [str(int(x)) for x in challenge.split(' ')[1:]]
             dados = {"challenge": new_challenge, "params": params}
             response = post(endereco_new_periodic_challenge, json=dados)
+            print(challenge)
             SERIAL_PORT.write(challenge)
-        periodicTimer = Timer(15, periodic_generator, args = [SERIAL_PORT])
+        periodicTimer = Timer(20, periodic_generator, args = [SERIAL_PORT])
         periodicTimer.start()
 
 
@@ -108,7 +137,12 @@ def periodic_generator(SERIAL_PORT):
 
 def read_from_arduino(SERIAL_PORT, HEARTS):
     global GAME_STARTED
-    while (GAME_STARTED):
+    global COMPLETED_CHALLENGES
+    global CURRENT_PERIODICS
+    global periodicTimer
+    global finishTimer
+    global gameData
+    while (True):
         SERIAL_PORT.connect()
         reply = SERIAL_PORT.read()
         if reply is not None:
@@ -122,13 +156,18 @@ def read_from_arduino(SERIAL_PORT, HEARTS):
                 action = reply
 
             if(action == "start"):
+                CURRENT_PERIODICS = []
                 GAME_STARTED = True
+                COMPLETED_CHALLENGES = 0
+                HEARTS = 3
                 challenge = generate_challenges(random.choice(FIX_MODES))
                 challengeName = challenge.split(' ')[0]
                 dados = {"minutes": DELTA_T/60, "seconds": DELTA_T%60, "challenge": challengeName, "params": [str(int(x)) for x in challenge.split(' ')[1:]]}
+                gameData["time"] = {"minutes": DELTA_T/60, "seconds": DELTA_T%60}
+                
                 response = post(endereco_start, json=dados)
-                finish = Timer(DELTA_T, finish_game, args=[SERIAL_PORT],)
-                finish.start()
+                finishTimer = Timer(DELTA_T, finish_game, args=[SERIAL_PORT],)
+                finishTimer.start()
                 periodicTimer = Timer(5, periodic_generator, args=[SERIAL_PORT])
                 periodicTimer.start()
                 SERIAL_PORT.write(challenge)
@@ -139,6 +178,8 @@ def read_from_arduino(SERIAL_PORT, HEARTS):
                     HEARTS = (HEARTS - 1)
                     print("Perdeu o Jogo - TOTAL: " + str(HEARTS))
                     GAME_STARTED = False
+                    periodicTimer.cancel()
+                    finishTimer.cancel()
                     reply_to_arduino = "end"
                     print(reply_to_arduino)
                     response = post(endereco_end, json={"win": False})
@@ -151,11 +192,12 @@ def read_from_arduino(SERIAL_PORT, HEARTS):
                     response = get(endereco_hit)
 
             elif(action == "finished"):
-                global COMPLETED_CHALLENGES
                 print("Completou Desafio " + challenge_completed + "!\n")
 
                 # Sending completed challenge to site
                 dados = {"challenge": challenge_completed, "correct": True}
+                finishedChallenge = [x for x in gameData['challenges'] if x['name'] == challenge_completed][-1]
+                gameData['challenge'][gameData['challenge'].index(finishedChallenge)]['completed'] = True
                 address = endereco_fix_challenge_completed if challenge_completed in FIX_MODES else endereco_periodic_challenge_completed
                 response = post(address, json=dados)
 
@@ -165,6 +207,9 @@ def read_from_arduino(SERIAL_PORT, HEARTS):
                     COMPLETED_CHALLENGES = COMPLETED_CHALLENGES + 1
                     if  COMPLETED_CHALLENGES == GOAL:
                         GAME_STARTED = False
+                        gameData['finished'] = True
+                        colecao.insert(gameData)
+                        gameData = {"time": {}, "challenges": [], "finished": False}
                         response = post(endereco_end, json={"win": True})
                         SERIAL_PORT.write("end")
                         SERIAL_PORT.disconnect
@@ -179,7 +224,7 @@ def read_from_arduino(SERIAL_PORT, HEARTS):
                         params = [str(int(x)) for x in reply_to_arduino.split(' ')[1:]]
                         dados = {"challenge": new_challenge, "params": params}
                         response = post(address, json=dados)
-
+                        
                         SERIAL_PORT.write(reply_to_arduino)
 
             elif(action == "lost"): # Only periodic challenges send lost
@@ -188,13 +233,14 @@ def read_from_arduino(SERIAL_PORT, HEARTS):
                     HEARTS = (HEARTS - 1)
                     print("Perdeu o Jogo - TOTAL: " + str(HEARTS))
                     GAME_STARTED = False
+                    periodicTimer.cancel()
+                    finishTimer.cancel()
                     reply_to_arduino = "end"
                     print(reply_to_arduino)
                     response = post(endereco_end, json={"win": False})
                     SERIAL_PORT.write(reply_to_arduino)
 
                 else:
-                    global CURRENT_PERIODICS
                     HEARTS = (HEARTS - 1)
                     print("Perdeu Vida - TOTAL: " + str(HEARTS))
                     dados = {"HEARTS": str(HEARTS)}

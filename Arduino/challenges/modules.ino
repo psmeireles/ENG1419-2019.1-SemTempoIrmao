@@ -8,6 +8,8 @@
 #define PIN_B 2.5
 #define PIN_C 0
 
+#define HIT_SOUND 250
+#define WIN_SOUND 1250
 
 Ultrasonic ultrasonic(US_TRIGGER_PIN, US_ECHO_PIN);
 
@@ -20,6 +22,7 @@ unsigned long lastHit = 0;
 
 void hit() { // This function will be called each time the player fails a challenge
   if(millis() - lastHit > 250){
+    tone(BUZZER, HIT_SOUND, BUZZER_TIME);
     Serial.println("hit");
     lastHit = millis(); 
   }
@@ -31,12 +34,14 @@ bool processCountdown(Process *proc) {
   if (proc->duration != -1 && (now - proc->startTime) / 1000 >= proc->duration) {
     // Process is over
     Serial.println("finished countdown");
+    tone(BUZZER, WIN_SOUND, BUZZER_TIME);
     return true;
   }
 
   if ((now - proc->lastInteraction) / 1000 > proc->interval) {
     proc->lastInteraction = now;
     Serial.println("lost countdown");
+    tone(BUZZER, HIT_SOUND, BUZZER_TIME);
     return true;
   }
 
@@ -79,9 +84,11 @@ bool processWires(Process *proc) {
     bool result = checkWires(proc);
     if (result) {
       Serial.println("finished wires");
+      tone(BUZZER, WIN_SOUND, BUZZER_TIME);
     }
     else {
       Serial.println("lost wires");
+      tone(BUZZER, HIT_SOUND, BUZZER_TIME);
       lastHit = millis(); 
     }
     return true;
@@ -91,6 +98,7 @@ bool processWires(Process *proc) {
     bool result = checkWires(proc);
     if (result) {
       Serial.println("finished wires");
+      tone(BUZZER, WIN_SOUND, BUZZER_TIME);
       return true;
     }
     else {
@@ -147,6 +155,7 @@ bool processDistance(Process *proc) {
   if (proc->startTime < now) {
     if (distance > proc->params[1] || distance < proc->params[0]) {
       Serial.println("lost distance");
+      tone(BUZZER, HIT_SOUND, BUZZER_TIME);
       lastHit = millis(); 
       return true;
     }
@@ -157,6 +166,7 @@ bool processDistance(Process *proc) {
 
   if (proc->duration != -1 && (now - proc->startTime) / 1000 >= proc->duration) {
     Serial.println("finished distance");
+    tone(BUZZER, WIN_SOUND, BUZZER_TIME);
     return true;
   }
 
@@ -205,6 +215,7 @@ bool processLight(Process *proc) {
 
   if (proc->duration != -1 && (now - proc->startTime) / 1000 >= proc->duration) {
     Serial.println("finished light");
+    tone(BUZZER, WIN_SOUND, BUZZER_TIME);
     return true;
   }
 
@@ -290,6 +301,7 @@ bool processGenius(Process *proc) {
 
   if(proc->params[5] == 5){
     Serial.println("finished genius");
+    tone(BUZZER, WIN_SOUND, BUZZER_TIME);
     return true;
   }
   return false;

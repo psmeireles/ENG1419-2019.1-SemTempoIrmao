@@ -7,6 +7,7 @@ void setup() {
   pinMode(LED_R, OUTPUT);
   pinMode(LED_Y, OUTPUT);
   pinMode(LED_G, OUTPUT);
+  pinMode(BUZZER, OUTPUT);
   tft.begin( tft.readID() );
   tft.fillScreen(TFT_BLACK);
   button.init(&tft, &touch, 120, 70, 200, 100, TFT_WHITE, TFT_RED,
@@ -22,6 +23,10 @@ void loop() {
 
   button.process();
 
+  if(!text.equals("")){
+    tone(BUZZER, 750, BUZZER_TIME);
+  }
+  
   if (text.startsWith("countdown")) {
     int seconds = text.substring(10, 12).toInt();
     int duration = text.substring(13).toInt();

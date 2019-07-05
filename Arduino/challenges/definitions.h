@@ -20,6 +20,9 @@
 #define BTN_R 23
 #define BTN_Y 25
 #define BTN_G 27
+#define BUZZER 52
+
+#define BUZZER_TIME 250
 
 
 #define TFT_COUNT_X 20

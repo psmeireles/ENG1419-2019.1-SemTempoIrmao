@@ -30,6 +30,7 @@ GENIUS_ORDER = []
 DELTA_T = 600
 GOAL = 5
 COMPLETED_CHALLENGES = 0
+periodicTimer = None
 
 def generate_challenges(challenge_instance):
 
@@ -82,12 +83,25 @@ def generate_challenges(challenge_instance):
 def finish_game(SERIAL_PORT, GAME_STARTED):
     print("FINISH")
     GAME_STARTED = False
-    response = post(endereco_end, json={"win": CHALLENGES_COMPLETED == GOAL})
+    response = post(endereco_end, json={"win": COMPLETED_CHALLENGES == GOAL})
     SERIAL_PORT.connect()
     reply_to_arduino = "end"
     print(reply_to_arduino)
     SERIAL_PORT.write(reply_to_arduino)
     return
+
+def periodic_generator(SERIAL_PORT, GAME_STARTED):
+    global periodicTimer
+    if GAME_STARTED:
+        if random.randint(1, 10) > 7:
+            SERIAL_PORT.connect()
+            challenge = generate_challenges(random.choice(PERIODIC_MODES))
+            print(challenge)
+            SERIAL_PORT.write(challenge)
+        periodicTimer = Timer(time.time() + 10, periodic_generator, args = [SERIAL_PORT, GAME_STARTED])
+        periodicTimer.start()
+
+
 
 
 def read_from_arduino(SERIAL_PORT , GAME_STARTED, HEARTS):
@@ -114,6 +128,8 @@ def read_from_arduino(SERIAL_PORT , GAME_STARTED, HEARTS):
                 response = post(endereco_start, json=dados)
                 finish = Timer(TIMESUP, finish_game, args=[SERIAL_PORT, GAME_STARTED],)
                 finish.start()
+                periodicTimer = Timer(COUNTDOWN + 30, periodic_generator, args=[SERIAL_PORT, GAME_STARTED])
+                periodicTimer.start()
                 SERIAL_PORT.write(challenge)
 
             elif(action == "hit"):
@@ -143,8 +159,8 @@ def read_from_arduino(SERIAL_PORT , GAME_STARTED, HEARTS):
                 # Generating new challenge
                 mode = FIX_MODES if challenge_completed in FIX_MODES else PERIODIC_MODES
                 if mode == FIX_MODES:
-                    CHALLENGES_COMPLETED = CHALLENGES_COMPLETED + 1
-                    if  CHALLENGES_COMPLETED == GOAL:
+                    COMPLETED_CHALLENGES = COMPLETED_CHALLENGES + 1
+                    if  COMPLETED_CHALLENGES == GOAL:
                         GAME_STARTED = False
                         response = post(endereco_end, json={"win": True})
                         SERIAL_PORT.write("end")

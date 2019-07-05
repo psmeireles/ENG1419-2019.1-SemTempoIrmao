@@ -26,6 +26,7 @@ PERIODIC_MODES = ['countdown', 'distance', 'light']
 WIRES_OPTIONS = ['1', '2', '3']
 GENIUS_OPTIONS = ['1', '2', '3']
 GENIUS_ORDER = []
+CURRENT_PERIODICS = []
 DELTA_T = 120
 GOAL = 3
 COMPLETED_CHALLENGES = 0
@@ -87,22 +88,19 @@ def finish_game(SERIAL_PORT):
 
 def periodic_generator(SERIAL_PORT):
     global periodicTimer
+    global CURRENT_PERIODICS
     if GAME_STARTED:
-        if random.randint(1, 10) > 7 or True:
-            SERIAL_PORT.connect()
-            challenge = generate_challenges(random.choice(PERIODIC_MODES))
-            print(challenge)
-            print('Gerando novo periodico')
-            new_challenge = challenge.split(' ')[0]
-            params = challenge.split(' ')[1:]
-            for item in params:
-                print(item)
-            params = [str(int(x)) for x in params]
+        SERIAL_PORT.connect()
+        challenge = generate_challenges(random.choice(PERIODIC_MODES))
+        print(challenge)
+        new_challenge = challenge.split(' ')[0]
+        if new_challenge not in CURRENT_PERIODICS:
+            CURRENT_PERIODICS.append(new_challenge)
+            params = [str(int(x)) for x in challenge.split(' ')[1:]]
             dados = {"challenge": new_challenge, "params": params}
             response = post(endereco_new_periodic_challenge, json=dados)
             SERIAL_PORT.write(challenge)
-            print('Gerou novo periodico')
-        periodicTimer = Timer(10, periodic_generator, args = [SERIAL_PORT])
+        periodicTimer = Timer(15, periodic_generator, args = [SERIAL_PORT])
         periodicTimer.start()
 
 
@@ -196,12 +194,14 @@ def read_from_arduino(SERIAL_PORT, HEARTS):
                     SERIAL_PORT.write(reply_to_arduino)
 
                 else:
+                    global CURRENT_PERIODICS
                     HEARTS = (HEARTS - 1)
                     print("Perdeu Vida - TOTAL: " + str(HEARTS))
                     dados = {"HEARTS": str(HEARTS)}
                     response = get(endereco_hit)
                     dados = {"challenge": challenge_completed, "correct": False}
                     response = post(endereco_periodic_challenge_completed, json=dados)
+                    CURRENT_PERIODICS.remove(challenge_completed)
 
             else:
                 print("arduino: " + reply)

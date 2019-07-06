@@ -129,9 +129,6 @@ def periodic_generator(SERIAL_PORT):
         periodicTimer = Timer(20, periodic_generator, args = [SERIAL_PORT])
         periodicTimer.start()
 
-
-
-
 def read_from_arduino(SERIAL_PORT, DATABASE_CLIENT, HEARTS):
     global GAME_STARTED
     global COMPLETED_CHALLENGES
@@ -250,7 +247,6 @@ def read_from_arduino(SERIAL_PORT, DATABASE_CLIENT, HEARTS):
             else:
                 print("arduino: " + reply)
             SERIAL_PORT.disconnect
-
 
     finish.cancel()
     return False

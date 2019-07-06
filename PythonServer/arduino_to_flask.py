@@ -3,10 +3,7 @@ import random
 from requests import *
 from threading import Timer
 from serial_class import *
-
-cliente = MongoClient("localhost", 27017)
-banco = cliente["SemTempoIrmao"]
-colecao = banco["Games"]
+from database_class import *
 
 random.seed(a=None)
 endereco = "http://127.0.0.1"
@@ -98,13 +95,14 @@ def generate_challenges(challenge_instance):
     else:
         print("Modo de jogo nao encontrado!")
 
-def finish_game(SERIAL_PORT):
+def finish_game(SERIAL_PORT, DATABASE_CLIENT):
     print("FINISH")
     global GAME_STARTED
     global gameData
     GAME_STARTED = False
     gameData['finished'] = COMPLETED_CHALLENGES == GOAL
-    colecao.insert(gameData)
+    #colecao.insert(gameData)
+    DATABASE_CLIENT.send(gameData)
     gameData = {"time": {}, "challenges": [], "finished": False}
     response = post(endereco_end, json={"win": COMPLETED_CHALLENGES == GOAL})
     SERIAL_PORT.connect()
@@ -134,7 +132,7 @@ def periodic_generator(SERIAL_PORT):
 
 
 
-def read_from_arduino(SERIAL_PORT, HEARTS):
+def read_from_arduino(SERIAL_PORT, DATABASE_CLIENT, HEARTS):
     global GAME_STARTED
     global COMPLETED_CHALLENGES
     global CURRENT_PERIODICS
@@ -165,9 +163,9 @@ def read_from_arduino(SERIAL_PORT, HEARTS):
                 gameData["time"] = {"minutes": DELTA_T/60, "seconds": DELTA_T%60}
 
                 response = post(endereco_start, json=dados)
-                finishTimer = Timer(DELTA_T, finish_game, args=[SERIAL_PORT],)
+                finishTimer = Timer(DELTA_T, finish_game, args=[SERIAL_PORT,DATABASE_CLIENT],)
                 finishTimer.start()
-                periodicTimer = Timer(5, periodic_generator, args=[SERIAL_PORT])
+                periodicTimer = Timer(5, periodic_generator, args=[SERIAL_PORT,])
                 periodicTimer.start()
                 SERIAL_PORT.write(challenge)
                 print(challenge)
@@ -207,7 +205,8 @@ def read_from_arduino(SERIAL_PORT, HEARTS):
                     if  COMPLETED_CHALLENGES == GOAL:
                         GAME_STARTED = False
                         gameData['finished'] = True
-                        colecao.insert(gameData)
+                        #colecao.insert(gameData)
+                        DATABASE_CLIENT.send(gameData)
                         gameData = {"time": {}, "challenges": [], "finished": False}
                         response = post(endereco_end, json={"win": True})
                         SERIAL_PORT.write("end")
@@ -259,8 +258,9 @@ def read_from_arduino(SERIAL_PORT, HEARTS):
 def main():
     HEARTS = 3
     serial_port = serial_client()
+    db_client = database_client()
     global GAME_STARTED
     GAME_STARTED = True
-    return read_from_arduino(serial_port, HEARTS)
+    return read_from_arduino(serial_port, db_client, HEARTS)
 
 main()

@@ -51,7 +51,7 @@ def generate_challenges(challenge_instance):
     if(challenge_instance == "countdown"):
 
         duration = random.randint(15, 60) # dois digitos
-        seconds = random.randint(5, duration)
+        seconds = random.randint(5, duration/3)
         challenge["params"] = [seconds, duration]
         gameData["challenges"].append(challenge)
         return CHALLENGES_MODES[0] + " "  + "%02d" % seconds + " " + "%02d" % duration
@@ -65,18 +65,18 @@ def generate_challenges(challenge_instance):
 
     elif (challenge_instance == "distance"):
 
-        distance_max = random.randint(1, 50)
-        distance_min = random.randint(1, distance_max)
-        duration = random.randint(20, 99)
+        distance_max = random.randint(6, 35)
+        distance_min = random.randint(1, distance_max - 5)
+        duration = random.randint(5, 10)
         challenge["params"] = [distance_min, distance_max, duration]
         gameData["challenges"].append(challenge)
         return CHALLENGES_MODES[2] + " "  + "%02d" % distance_min + " " + "%02d" % distance_max + " " + "%02d" % duration
         
     elif (challenge_instance == "light"):
 
-        light_max = random.randint(50,100)
-        light_min = random.randint(0, light_max)
-        duration = random.randint(5, 30)
+        light_max = random.randint(25,50)
+        light_min = random.randint(0, light_max - 20)
+        duration = random.randint(5, 10)
         challenge["params"] = [light_min, light_max, duration]
         gameData["challenges"].append(challenge)
         return CHALLENGES_MODES[3] + " "  + "%04d" % light_min + " " + "%04d" % light_max + " " + "%02d" % duration
@@ -197,7 +197,7 @@ def read_from_arduino(SERIAL_PORT, HEARTS):
                 # Sending completed challenge to site
                 dados = {"challenge": challenge_completed, "correct": True}
                 finishedChallenge = [x for x in gameData['challenges'] if x['name'] == challenge_completed][-1]
-                gameData['challenge'][gameData['challenge'].index(finishedChallenge)]['completed'] = True
+                gameData['challenges'][gameData['challenges'].index(finishedChallenge)]['completed'] = True
                 address = endereco_fix_challenge_completed if challenge_completed in FIX_MODES else endereco_periodic_challenge_completed
                 response = post(address, json=dados)
 

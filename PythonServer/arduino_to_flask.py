@@ -3,7 +3,6 @@ import random
 from requests import *
 from threading import Timer
 from serial_class import *
-from pymongo import MongoClient, ASCENDING, DESCENDING
 
 cliente = MongoClient("localhost", 27017)
 banco = cliente["SemTempoIrmao"]
@@ -71,7 +70,7 @@ def generate_challenges(challenge_instance):
         challenge["params"] = [distance_min, distance_max, duration]
         gameData["challenges"].append(challenge)
         return CHALLENGES_MODES[2] + " "  + "%02d" % distance_min + " " + "%02d" % distance_max + " " + "%02d" % duration
-        
+
     elif (challenge_instance == "light"):
 
         light_max = random.randint(25,50)
@@ -94,7 +93,7 @@ def generate_challenges(challenge_instance):
         challenge["params"] = GENIUS_ORDER[:]
         challenge["params"].append(light_interval)
         gameData["challenges"].append(challenge)
-        return CHALLENGES_MODES[4] + " "  + GENIUS_ORDER[0] + " " + GENIUS_ORDER[1] + " " + GENIUS_ORDER[2] + " " + GENIUS_ORDER[3] + " " + GENIUS_ORDER[4] + " " + light_interval 
+        return CHALLENGES_MODES[4] + " "  + GENIUS_ORDER[0] + " " + GENIUS_ORDER[1] + " " + GENIUS_ORDER[2] + " " + GENIUS_ORDER[3] + " " + GENIUS_ORDER[4] + " " + light_interval
 
     else:
         print("Modo de jogo nao encontrado!")
@@ -164,7 +163,7 @@ def read_from_arduino(SERIAL_PORT, HEARTS):
                 challengeName = challenge.split(' ')[0]
                 dados = {"minutes": DELTA_T/60, "seconds": DELTA_T%60, "challenge": challengeName, "params": [str(int(x)) for x in challenge.split(' ')[1:]]}
                 gameData["time"] = {"minutes": DELTA_T/60, "seconds": DELTA_T%60}
-                
+
                 response = post(endereco_start, json=dados)
                 finishTimer = Timer(DELTA_T, finish_game, args=[SERIAL_PORT],)
                 finishTimer.start()
@@ -224,7 +223,7 @@ def read_from_arduino(SERIAL_PORT, HEARTS):
                         params = [str(int(x)) for x in reply_to_arduino.split(' ')[1:]]
                         dados = {"challenge": new_challenge, "params": params}
                         response = post(address, json=dados)
-                        
+
                         SERIAL_PORT.write(reply_to_arduino)
 
             elif(action == "lost"): # Only periodic challenges send lost

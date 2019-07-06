@@ -12,9 +12,9 @@ class database_client:
         self.COLLECTION= None
 
     def connect(self):
-        self.CLIENT = MongoClient(IP_HOST, PORT)
-        self.DATABASE = self.CLIENT[DATABASE_NAME]
-        self.COLLECTION = self.DATABASE[COLLECTION_NAME]
+        self.CLIENT = MongoClient(self.IP_HOST, self.PORT)
+        self.DATABASE = self.CLIENT[self.DATABASE_NAME]
+        self.COLLECTION = self.DATABASE[self.COLLECTION_NAME]
 
     def send(self, data):
         self.COLLECTION.insert(data)

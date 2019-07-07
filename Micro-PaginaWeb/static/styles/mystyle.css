@@ -33,52 +33,8 @@ h3,h4
   font-family: AlarmClock;
 }
 
-.button
-{
-    width:150px;
-    height:62px;
-    top:70%;
-    left:48%;
-    font-family: Game;
-    position:absolute;
-    text-align: center;  
-}
-
-.centralized
-{
-    position:absolute;
-    text-align: center;
-    color: white;
-
-}
-
-#message
-{
-
-    top:50%;
-    left:0%;
-    font-family: Game;
-    margin-left:60px;
-    margin-right: 60px;
-    
-}
-
-#title 
-{
-    width:700px;
-    height:100px;
-    top:20%;
-    left:23%;
-    font-family: Logo;
-    font-size:120px;  
-}
-
-#playButton
-{
-    font-size:40px;
-    top:70%;
-    left:40%;
-    font-family: Game;
-    margin-left:60px;
-    margin-right: 60px;
+.square {
+  height: 30px;
+  width: 30px;
+  display: inline-block
 }

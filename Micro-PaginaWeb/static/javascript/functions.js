@@ -11,6 +11,7 @@ function restartChallenges()
     var lifesMessage = document.getElementById("hearts");
     numberLifes= 3;
     lifesMessage.innerHTML = "♥ ♥ ♥ ";
+    lifesMessage.style.color = "red";
 	var fixedChallenges = document.getElementById("fixedChallenges");
 	while (fixedChallenges.firstChild) 
 	{
@@ -30,36 +31,77 @@ function createNewFixedChallenge(challengeName,wireList)
     wireList=wireList.map(function(wire)
     {
         if(wire=="1")
-        return " Verde" //fio 1
+        return "green" //fio 1
         else if(wire=="2")
-            return " Amarelo" //fio 2
+            return "yellow" //fio 2
         else if(wire=="3")
-        return " Azul" //fio 3
+        return "blue" //fio 3
     })
     var newFixedChallenge = document.createElement("h4");
-    var challengeImage = document.createElement("img");
-    var additionalImage = document.createElement("img");
+
     if(challengeName == "wires")
     {
-        newFixedChallenge.innerHTML = "Coloque os fios na seguinte ordem e aperte o botão para confirmar:" + wireList[0]+"-Cinza,"+wireList[1]+"-Vermelho,"+ wireList[2] +"-Laranja";
-        challengeImage.src= "static/images/wires.png";
-        additionalImage.src= "static/images/button.png";
+        arrow=document.createElement("h2");
+
+        arrow=document.createElement("div");
+        randomSquare1=document.createElement("div");
+        randomSquare1.classList.add("square");
+        randomSquare1.style.backgroundColor = wireList[0]
+
+        randomSquare2=document.createElement("div");
+        randomSquare2.classList.add("square");
+        randomSquare2.style.backgroundColor = wireList[1]
+
+        randomSquare3=document.createElement("div");
+        randomSquare3.classList.add("square");
+        randomSquare3.style.backgroundColor = wireList[2]
+
+        fixedSquare1=document.createElement("div");
+        fixedSquare1.classList.add("square");
+        fixedSquare1.style.backgroundColor = "grey"
+
+        fixedSquare2=document.createElement("div");
+        fixedSquare2.classList.add("square");
+        fixedSquare2.style.backgroundColor = "red"
+
+        fixedSquare3=document.createElement("div");
+        fixedSquare3.classList.add("square");
+        fixedSquare3.style.backgroundColor = "orange"
+
+
+        newFixedChallenge.innerHTML = "Coloque os fios na seguinte ordem e aperte o botão para confirmar";
+        newFixedChallenge.appendChild(document.createElement("br"));
+        newFixedChallenge.appendChild(randomSquare1);
+        newFixedChallenge.appendChild(fixedSquare1);
+        newFixedChallenge.appendChild(document.createElement("br"));
+
+        newFixedChallenge.appendChild(randomSquare2);
+        newFixedChallenge.appendChild(fixedSquare2);
+        newFixedChallenge.appendChild(document.createElement("br"));
+
+        newFixedChallenge.appendChild(randomSquare3);
+        newFixedChallenge.appendChild(fixedSquare3);
+
 
     }
     else if(challengeName == "genius")
     {
+        var challengeImage = document.createElement("img");
+        var additionalImage = document.createElement("img");
         newFixedChallenge.innerHTML = "Observe os LEDs e aperte os botões correspondentes!";
         challengeImage.src= "static/images/led.png";
         additionalImage.src= "static/images/button.png";
+        challengeImage.height = imageHeight;
+        challengeImage.width = imageWidth;
+        additionalImage.height = imageHeight;
+        additionalImage.width = imageWidth;
+        newFixedChallenge.appendChild(challengeImage);
+        newFixedChallenge.appendChild(additionalImage);
 
     }
     newFixedChallenge.style.fontSize="20px";
-    challengeImage.height = imageHeight;
-    challengeImage.width = imageWidth;
-    additionalImage.height = imageHeight;
-    additionalImage.width = imageWidth;
-    newFixedChallenge.appendChild(challengeImage);
-    newFixedChallenge.appendChild(additionalImage);
+    newFixedChallenge.style.fontFamily="Roboto";
+
     newFixedChallenge.id=challengeName;
     document.getElementById("fixedChallenges").appendChild(newFixedChallenge);
 }
@@ -92,6 +134,7 @@ function createNewPeriodicChallenge(challengeName,params)
         challengeImage.src= "static/images/tft.png";
        
     }
+    newPeriodicChallenge.style.fontFamily="Roboto"
     newPeriodicChallenge.style.fontSize="20px";
     challengeImage.height = imageHeight;
     challengeImage.width = imageWidth;
@@ -126,6 +169,7 @@ function startTimer(minutes,seconds)
             if (elapsedTime < 0) 
             {
                 document.getElementById("clock").innerHTML = "00:00"
+                clearInterval(timer);
             }
         }
     , 1000);
@@ -170,29 +214,39 @@ function loseLife()
         document.getElementById("hearts").innerHTML=" ♥ ♥ ";
     else if(numberLifes ==1)
         document.getElementById("hearts").innerHTML=" ♥ ";
-    //else
-    //{
-    //    gameOver(false);
-    //}
 
 }
 
 function gameOver(hasWon)
 {
-    clearInterval(timer);
+    clearInterval(timer);   
+    var sound;
+    var promise;
     var endMessage = document.getElementById("hearts");
     if(!hasWon)
     {
+        sound = document.getElementById("defeat"); 
         endMessage.style.fontFamily="Game";
-        endMessage.innerHTML= "Você perdeu! Aperte o botão para jogar outra vez"
+        endMessage.innerHTML= "Você perdeu! Aperte o botão para jogar outra vez";
         endMessage.style.color="red";
+        promise = sound.play();
 	}
     else if(hasWon)
     {
+        sound = document.getElementById("victory"); 
         endMessage.style.fontFamily="Game";
-        endMessage.innerHTML= "Você ganhou! Aperte o botão para jogar outra vez"
+        endMessage.style.color="green";
+        endMessage.innerHTML= "Você ganhou! Aperte o botão para jogar outra vez";
+        promise = sound.play();
     }
-    firstGame = false;
+    if (promise !== undefined) {
+        promise.then(_ => {
+            // Autoplay started!
+        }).catch(error => {
+            console.log("Audio not started")
+            // Autoplay was prevented.
+        });
+    }
 }
 
 function challengeCleared(challengeName)
@@ -204,9 +258,3 @@ function challengeCleared(challengeName)
             clearedChallenge.parentNode.removeChild(clearedChallenge);
         },3000);
 }
-
-
-
-
-
-//window.onload=startTimer();

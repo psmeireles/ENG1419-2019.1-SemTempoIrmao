@@ -32,12 +32,6 @@ def history():
             lastGame["finished"] = "Vitória"
         else:
             lastGame["finished"] = "Derrota"
-        # for challenge in result["challenges"]:
-        #     challengeData = {}
-        #     challengeData["name"] = challenge["name"]
-
-        #     challengeNames = challengeNames + challenge["name"]+','
-        #     challengeNames=challengeNames[:-1]
     
     #Pegando dados de todos os jogos
     games = []
@@ -69,8 +63,6 @@ def history():
             else:
                 newGame["finished"] = "Derrota"
             games.append(newGame)
-    
-    outroTeste={"nome":"123","carlos":13}
     return render_template("previousGames.html",games = games,lastGame = lastGame)
 
 #Evento de inicio do jogo:Responsável por comecar o timer da página e mostrar o primeiro desafio fixo

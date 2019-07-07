@@ -1,0 +1,97 @@
+<!doctype html>
+<html lang="en">
+	<head>
+		
+		<link rel= "stylesheet" type= "text/css" href= "static/styles/mystyle.css">
+      	<meta charset="UTF-8">
+      	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+      	<meta http-equiv="X-UA-Compatible" content="ie=edge">
+    	<!-- Bootstrap CSS -->
+      	<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+	</head>
+
+	<body style="background-color: black;color: white ;font-family:Roboto;text-align: center;">
+		<br>
+		<h2  style=" font-family: 'Game'">Jogos anteriores</h2>
+		<div class="container">
+			<div class="row">
+				<div class="col" style="margin-right: 40px">	
+					<h2 style="font-family: 'Game'"> Dados do último jogo</h2> 
+					<h5>Tempo de jogo decorrido: {{ lastGame.time }} </h5> 
+					<h5>Resultado Final: {{ lastGame.finished}} </h5> <br>
+					<h5>Desafios que apareceram</h5> 
+					{% for challenge in lastGame.challenges %}
+						{% if challenge.name == "distance" %}
+							<h6> Nome do desafio: Manter distância </h6> 
+							<h6> Distância mínima: {{ challenge.params[0] }}</h6> 
+							<h6> Distância máxima: {{ challenge.params [1]}} </h6> 
+							<h6> Duração: {{ challenge.params[2] }} segundos </h6> 
+
+						{% elif challenge.name == "wires" %}
+							<h6> Nome do desafio: Conexão de Fios </h6> 
+							<h6> Primeiro fio: {{ challenge.params[0] }} <h6> 
+							<h6> Segundo fio: {{ challenge.params [1]}} </h6> 
+							<h6> Terceiro fio: {{ challenge.params[2] }} </h6>
+
+						{% elif challenge.name == "genius" %}
+							<h6> Nome do desafio: Genius </h6>
+
+						{% elif challenge.name == "light" %}
+							<h6> Nome do desafio: Alterar Luminosidade </h6> 
+							<h6> Valor mínimo: {{ challenge.params[0] }} <h6> 
+							<h6> Valor máximo: {{ challenge.params [1]}} </h6> 
+							<h6> Duração: {{ challenge.params[2] }} segundos </h6> 
+
+						{% elif challenge.name == "countdown" %}
+							<h6> Nome do desafio: Apertar Botão </h6> 
+							<h6> Frequência: A cada {{ challenge.params[0] }} segundos<h6> 
+							<h6> Duração: {{ challenge.params[1] }} segundos </h6> 
+
+						{% endif %}
+						<h6> Tempo que ficou ativo durante o jogo: {{ challenge.time_issued }} segundos </h6> 
+						{% if challenge.completed == True %}
+							<h6> Status do desafio: Completo </h6> <br> 
+						{% elif challenge.completed == False %}
+							<h6> Status do desafio: Não completo </h6> <br> 
+						{% endif %}
+					{% endfor %}
+				</div>
+				<div class="col">
+						<h2  style=" text-align: center;font-family: Game">Todos os Jogos</h2>
+						<table class="table table-striped" style=" text-align: center;color:white;" border = 1>
+							<thead>
+								<tr>
+									<th >Tempo Decorrido</th> 
+									<th >Desafios</th>
+									<th >Resultado Final</th>
+								</tr>
+							</thead>
+				
+							<tbody>
+								{% for game in games %}
+								<tr>
+									<td> {{ game.time}} </td>
+									<td> {{ game.challenges }} </td>
+									<td> {{ game.finished}}  </td>
+								</tr>
+								{% endfor %}
+							<tbody>
+						</table>
+				</div>	
+			</div>
+		</div>
+	
+
+		<footer>
+			<!-- Optional JavaScript -->
+			<!-- jQuery first, then Popper.js, then Bootstrap JS -->
+			
+					<!-- <script src="mudaCheckbox.js"></script> -->
+					<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+					<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
+					<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+		</footer>
+
+	</body>
+
+</html>

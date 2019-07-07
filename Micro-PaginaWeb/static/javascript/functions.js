@@ -9,6 +9,7 @@ var imageWidth = 60;
 function restartChallenges()
 {
     var lifesMessage = document.getElementById("hearts");
+    numberLifes= 3;
     lifesMessage.innerHTML = "♥ ♥ ♥ ";
 	var fixedChallenges = document.getElementById("fixedChallenges");
 	while (fixedChallenges.firstChild) 
@@ -60,7 +61,6 @@ function createNewFixedChallenge(challengeName,wireList)
     newFixedChallenge.appendChild(challengeImage);
     newFixedChallenge.appendChild(additionalImage);
     newFixedChallenge.id=challengeName;
-    //numberFixedChallenge = numberFixedChallenge + 1;
     document.getElementById("fixedChallenges").appendChild(newFixedChallenge);
 }
 
@@ -101,7 +101,6 @@ function createNewPeriodicChallenge(challengeName,params)
     if(hasAdditionalImage)
         newPeriodicChallenge.appendChild(additionalImage);
     newPeriodicChallenge.id=challengeName;
-   // numberPeriodicChallenge = numberPeriodicChallenge + 1;
     document.getElementById("periodicChallenges").appendChild(newPeriodicChallenge);
 }
 
@@ -117,7 +116,7 @@ function startTimer(minutes,seconds)
         {
             var startCountdown = new Date().getTime();
             var elapsedTime = endCountdown - startCountdown;
-    
+            
             // Conversoes
             var minutes = Math.floor((elapsedTime % (1000 * 60 * 60)) / (1000 * 60));
             var seconds = Math.floor((elapsedTime % (1000 * 60)) / 1000);
@@ -127,7 +126,6 @@ function startTimer(minutes,seconds)
             if (elapsedTime < 0) 
             {
                 document.getElementById("clock").innerHTML = "00:00"
-               //gameOver(false);
             }
         }
     , 1000);

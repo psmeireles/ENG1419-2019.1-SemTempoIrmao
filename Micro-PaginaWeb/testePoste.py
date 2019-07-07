@@ -20,7 +20,7 @@ dados4 = {"challenge": "distance","params":["10","20","5"]}
 
 dados5 = {"challenge": "wires","correct":True}
 
-resposta = post(endereco5, json=dados5)
+resposta = post(endereco1, json=dados1)
 
 
 

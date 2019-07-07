@@ -39,9 +39,10 @@ gameData = {"time": {}, "challenges": [], "finished": False}
 
 def generate_challenges(challenge_instance):
     global gameData
+    now = time.time()
     challenge = {
         "name": challenge_instance,
-        "time_issued": time.time(),
+        "time_issued": {"minutes": (now - TIME_STARTED)/60, "seconds": (now - TIME_STARTED)%60},
         "params": [],
         "completed": False
     }

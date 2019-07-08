@@ -50,7 +50,7 @@ def generate_challenges(challenge_instance):
     if(challenge_instance == "countdown"):
 
         duration = random.randint(15, 60) # dois digitos
-        seconds = random.randint(5, duration/3)
+        seconds = random.randint(10, 10 if duration/3 < 10 else duration/3)
         challenge["params"] = [seconds, duration]
         gameData["challenges"].append(challenge)
         return CHALLENGES_MODES[0] + " "  + "%02d" % seconds + " " + "%02d" % duration

@@ -26,7 +26,7 @@ dados5 = {"challenge": "wires","correct":True}
 
 #resposta = post(endereco3, json=dados3)
 
-resposta = post(endereco1, json=dados1)
+resposta = post(endereco, json=dados2)
 
 #resposta = get(endereco7)
 

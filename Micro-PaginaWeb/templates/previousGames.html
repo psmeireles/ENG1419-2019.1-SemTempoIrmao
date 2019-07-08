@@ -18,63 +18,86 @@
 		<div class="container">
 			<div class="row">
 				<div class="col" style="margin-right: 40px">	
-					<h2 style="font-family: 'Game'"> Dados do último jogo</h2> 
+					<h2 style="font-family: 'Game'"> Dados do último jogo</h2>
+					<h5>Desafios que apareceram</h5> 
+					
+					<table class="table table-striped" style=" text-align: center;color:white;" border = 1>
+						<thead>
+							<tr>
+								<th style="vertical-align: middle" >Desafio</th>
+								<th style="vertical-align: middle">Tempo em que Apareceu</th> 
+								<th style="vertical-align: middle">Status</th>
+							</tr>
+						</thead>
+			
+						<tbody>
+								{% for challenge in lastGame.challenges %}
+							<tr>
+								{% if challenge.name == "distance" %}
+									<td style="vertical-align: middle"><img src="static/images/distance.png"  width="42" height="42">
+										<h6>Sensor de Distância</h6>
+									</td>
+								{% elif challenge.name == "wires" %}
+									<td style="vertical-align: middle"><img src="static/images/wires.png"  width="42" height="42">
+										<h6>Fios</h6>
+									</td>
+								{% elif challenge.name == "countdown" %}
+									<td style="vertical-align: middle"><img src="static/images/tft.png"  width="42" height="42">
+										<h6>Botão</h6>
+									</td>
+								{% elif challenge.name == "genius" %}
+									<td style="vertical-align: middle"><img src="static/images/led.png"  width="42" height="42">
+										<h6>Genius</h6>
+									</td>
+								{% elif challenge.name == "light" %}
+									<td style="vertical-align: middle"><img src="static/images/lightSensor.png"  width="42" height="42">
+										<h6>Sensor de Luz</h6>
+									</td>
+								{% endif %}
+								<td style="vertical-align: middle"> {{ challenge.time_issued}} </td>
+								{% if challenge.completed == True %}
+									<td style="color:green;vertical-align: middle">Completo</td>
+								{% elif challenge.completed == False %}
+									<td style="color:red;vertical-align: middle">Não Completo </td> 
+								{% endif %}
+	
+							</tr>
+							{% endfor %}
+						<tbody>
+					</table>
+
+
+
+
+
+
 					<h5>Tempo de jogo decorrido: {{ lastGame.time }} </h5> 
 					<h5>Resultado Final: {{ lastGame.finished}} </h5> <br>
-					<h5>Desafios que apareceram</h5> 
-					{% for challenge in lastGame.challenges %}
-						{% if challenge.name == "distance" %}
-							<h6> Nome do desafio: Manter distância </h6> 
-							<h6> Distância mínima: {{ challenge.params[0] }}</h6> 
-							<h6> Distância máxima: {{ challenge.params [1]}} </h6> 
-							<h6> Duração: {{ challenge.params[2] }} segundos </h6> 
-
-						{% elif challenge.name == "wires" %}
-							<h6> Nome do desafio: Conexão de Fios </h6> 
-							<h6> Primeiro fio: {{ challenge.params[0] }} <h6> 
-							<h6> Segundo fio: {{ challenge.params [1]}} </h6> 
-							<h6> Terceiro fio: {{ challenge.params[2] }} </h6>
-
-						{% elif challenge.name == "genius" %}
-							<h6> Nome do desafio: Genius </h6>
-
-						{% elif challenge.name == "light" %}
-							<h6> Nome do desafio: Alterar Luminosidade </h6> 
-							<h6> Valor mínimo: {{ challenge.params[0] }} <h6> 
-							<h6> Valor máximo: {{ challenge.params [1]}} </h6> 
-							<h6> Duração: {{ challenge.params[2] }} segundos </h6> 
-
-						{% elif challenge.name == "countdown" %}
-							<h6> Nome do desafio: Apertar Botão </h6> 
-							<h6> Frequência: A cada {{ challenge.params[0] }} segundos<h6> 
-							<h6> Duração: {{ challenge.params[1] }} segundos </h6> 
-
-						{% endif %}
-						<h6> Tempo que o desafio apareceu: {{ challenge.time_issued }} </h6> 
-						{% if challenge.completed == True %}
-							<h6> Status do desafio: Completo </h6> <br> 
-						{% elif challenge.completed == False %}
-							<h6> Status do desafio: Não completo </h6> <br> 
-						{% endif %}
-					{% endfor %}
+				
+			
 				</div>
 				<div class="col">
 						<h2  style=" text-align: center;font-family: Game">Todos os Jogos</h2>
+						<br>
 						<table class="table table-striped" style=" text-align: center;color:white;" border = 1>
 							<thead>
 								<tr>
-									<th >Tempo Decorrido</th> 
-									<th >Desafios</th>
-									<th >Resultado Final</th>
+									<th style="vertical-align: middle" >Tempo Decorrido</th> 
+									<th style="vertical-align: middle">Desafios</th>
+									<th style="vertical-align: middle" >Resultado Final</th>
 								</tr>
 							</thead>
 				
 							<tbody>
 								{% for game in games %}
 								<tr>
-									<td> {{ game.time}} </td>
-									<td> {{ game.challenges }} </td>
-									<td> {{ game.finished}}  </td>
+									<td style="vertical-align: middle"> {{ game.time}} </td>
+									<td style="vertical-align: middle"> {{ game.challenges }} </td>
+									{% if game.finished == "Vitoria" %}
+										<td style="color:green;vertical-align: middle">Vitoria</td>
+									{% elif game.finished == "Derrota" %}
+										<td style="color:red;vertical-align: middle">Derrota </td> 
+									{% endif %}
 								</tr>
 								{% endfor %}
 							<tbody>

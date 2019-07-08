@@ -246,76 +246,83 @@ bool processGenius(Process *proc) {
   unsigned long now = millis();
   int colors[3] = {LED_R, LED_Y, LED_G};
 
-  // Blinking LEDS
-  if (((now - proc->startTime)) % proc->interval < 10 && proc->params[6] != 6) {
-    int ledIndex = proc->params[6];
-    digitalWrite(colors[0], LOW);
-    digitalWrite(colors[1], LOW);
-    digitalWrite(colors[2], LOW);
-    if(proc->params[6] != 5)
-      digitalWrite(colors[proc->params[ledIndex]], HIGH);
-    //Serial.println("Acendeu o " + String(colors[proc->params[ledIndex]]));
-    proc->params[6]++; 
-  }
-
-  //Checking buttons
-  if((now - proc->startTime) > 5*proc->interval && (now - proc->lastInteraction) >= 500){
-    int btnR = digitalRead(BTN_R);
-    int btnY = digitalRead(BTN_Y);
-    int btnG = digitalRead(BTN_G);
-
-    int currIndex = proc->params[5];
-
-    
-    if (btnR == HIGH){
-      proc->lastInteraction = millis();
-      if (proc->params[currIndex] == 0){
-        proc->params[5]++;
+  if(now > proc->startTime){
+    // Blinking LEDS
+    if ((now - proc->startTime) % proc->interval < 10 && proc->params[6] != 6) {
+      int ledIndex = proc->params[6];
+      digitalWrite(colors[0], LOW);
+      digitalWrite(colors[1], LOW);
+      digitalWrite(colors[2], LOW);
+      if(proc->params[6] != 5)
+        digitalWrite(colors[proc->params[ledIndex]], HIGH);
+      //Serial.println("Acendeu o " + String(colors[proc->params[ledIndex]]));
+      proc->params[6]++; 
+    }
+  
+    //Checking buttons
+    else if((now - proc->startTime) > 6*proc->interval && (now - proc->lastInteraction) > 500 && proc->params[6] == 6){
+      int btnR = digitalRead(BTN_R);
+      int btnY = digitalRead(BTN_Y);
+      int btnG = digitalRead(BTN_G);
+      digitalWrite(colors[0], btnR);
+      digitalWrite(colors[1], btnY);
+      digitalWrite(colors[2], btnG);
+      int currIndex = proc->params[5];
+  
+      
+      if (btnR == HIGH){
+        proc->lastInteraction = millis();
+        if (proc->params[currIndex] == 0){
+          proc->params[5]++;
+        }
+        else{
+          proc->params[5] = 0;
+          proc->params[6] = 0; 
+          proc->startTime = millis();
+          hit();
+        }
       }
-      else{
-        proc->params[5] = 0;
-        proc->params[6] = 0; 
-        proc->startTime = millis();
-        hit();
+      else if (btnY == HIGH){
+        proc->lastInteraction = millis();
+        if (proc->params[currIndex] == 1){
+          proc->params[5]++;
+        }
+        else{
+          proc->params[5] = 0;
+          proc->params[6] = 0; 
+          proc->startTime = millis();
+          hit();
+        }
+      }
+      else if (btnG == HIGH){
+        proc->lastInteraction = millis();
+        if (proc->params[currIndex] == 2){
+          proc->params[5]++;
+        }
+        else{
+          proc->params[5] = 0;
+          proc->params[6] = 0; 
+          proc->startTime = millis();
+          hit();
+        }
       }
     }
-    else if (btnY == HIGH){
-      proc->lastInteraction = millis();
-      if (proc->params[currIndex] == 1){
-        proc->params[5]++;
-      }
-      else{
-        proc->params[5] = 0;
-        proc->params[6] = 0; 
-        proc->startTime = millis();
-        hit();
-      }
+  
+    if(proc->params[5] == 5){
+      Serial.println("finished genius");
+      tone(BUZZER, WIN_SOUND, BUZZER_TIME);
+      digitalWrite(colors[0], LOW);
+      digitalWrite(colors[1], LOW);
+      digitalWrite(colors[2], LOW);
+      return true;
     }
-    else if (btnG == HIGH){
-      proc->lastInteraction = millis();
-      if (proc->params[currIndex] == 2){
-        proc->params[5]++;
-      }
-      else{
-        proc->params[5] = 0;
-        proc->params[6] = 0; 
-        proc->startTime = millis();
-        hit();
-      }
-    }
-  }
-
-  if(proc->params[5] == 5){
-    Serial.println("finished genius");
-    tone(BUZZER, WIN_SOUND, BUZZER_TIME);
-    return true;
   }
   return false;
 }
 
 void initializeGenius(int sequence[5], int lightInterval) {
   Process *geniusProc = (Process*) malloc(sizeof(Process));
-  geniusProc->startTime = millis();
+  geniusProc->startTime = millis() + 3000;
   geniusProc->lastInteraction = geniusProc->startTime;
   geniusProc->interval = lightInterval;
   geniusProc->duration = -1;
@@ -329,4 +336,7 @@ void initializeGenius(int sequence[5], int lightInterval) {
   geniusProc->params[6] = 0;  // Current LED to blink
   geniusProc->action = processGenius;
   processes.add(geniusProc);
+  digitalWrite(LED_R, HIGH);
+  digitalWrite(LED_Y, HIGH);
+  digitalWrite(LED_G, HIGH);
 }

@@ -119,7 +119,8 @@ function createNewFixedChallenge(challengeName,wireList)
 
 function createNewPeriodicChallenge(challengeName,params)
 { 
-
+    param0=params[0].fontcolor("red");
+    param1=params[1].fontcolor("red");
     var newPeriodicChallenge = document.createElement("h4");
     newPeriodicChallenge.style.marginRight="80px";
     var challengeImage = document.createElement("img");
@@ -127,14 +128,16 @@ function createNewPeriodicChallenge(challengeName,params)
     var hasAdditionalImage = false;
     if(challengeName == "distance")
     {
-        newPeriodicChallenge.innerHTML = "Mantenha a distância entre " + params[0]+ " e " + params[1]+ " por " +params[2] +" segundos   ";
+        param2=params[2].fontcolor("red");
+        newPeriodicChallenge.innerHTML = "Mantenha a distância entre " + param0+ " e " + param1+ " por " +param2 +" segundos   ";
         challengeImage.src= "static/images/distance.png";
         additionalImage.src= "static/images/hand.png";
         hasAdditionalImage = true;
     }
     else if(challengeName == "light")
     {
-        newPeriodicChallenge.innerHTML = `Mantenha a luz entre ${params[0]} e ${params[1]} por ${params[2]} segundos      `;
+        param2=params[2].fontcolor("red");
+        newPeriodicChallenge.innerHTML = `Mantenha a luz entre ${param0} e ${param1} por ${param2} segundos      `;
         challengeImage.src= "static/images/lightSensor.png";
         additionalImage.src= "static/images/hand.png";
         hasAdditionalImage = true;
@@ -142,12 +145,12 @@ function createNewPeriodicChallenge(challengeName,params)
     }
     else if(challengeName == "countdown")
     {
-        newPeriodicChallenge.innerHTML = "Pressione o botão a cada " + params[0]+ " segundos por " + params[1] +" segundos      ";
+        newPeriodicChallenge.innerHTML = "Pressione o botão a cada " + param0+ " segundos por " + param1 +" segundos      ";
         challengeImage.src= "static/images/tft.png";
        
     }
     newPeriodicChallenge.style.fontFamily="Roboto"
-    newPeriodicChallenge.style.fontSize="30px";
+    newPeriodicChallenge.style.fontSize="40px";
     challengeImage.height = imageHeight;
     challengeImage.width = imageWidth;
     additionalImage.height = imageHeight;

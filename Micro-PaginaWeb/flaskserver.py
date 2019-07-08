@@ -59,8 +59,8 @@ def history():
                     trueChallengeName = "Alterar Luminosidade"
                 elif(challenge["name"] == "countdown"):
                     trueChallengeName = "Apertar Botao"
-                challengeNames = challengeNames + trueChallengeName+','
-            challengeNames=challengeNames[:-1]
+                challengeNames = challengeNames + trueChallengeName+', '
+            challengeNames=challengeNames[:-2]
             newGame["challenges"] = challengeNames
             challengeNames = ""
             if(result["finished"]):
@@ -69,63 +69,6 @@ def history():
                 newGame["finished"] = "Derrota"
             games.append(newGame)
     return render_template("previousGames.html",games = games,lastGame = lastGame)
-
-#Evento de inicio do jogo:Responsável por comecar o timer da página e mostrar o primeiro desafio fixo
-#Deve enviar: Nome do primeiro Desafio Fixo (string) + parametros
-# @app.route("/start",  methods=['POST'])
-# def startGame():
-#     content = request.json
-#     socketio.emit("start",content)
-#     return "Game Started!"
-
-# #Evento que adiciona um novo desafio Fixo
-# #Deve enviar: Nome do Desafio Fixo a ser adicionado (string)
-# @app.route('/newFixedChallenge', methods=['POST'])
-# def newFixedChallenge():
-#     content = request.json
-#     socketio.emit("newFixedChallenge",content)
-#     return "New Fixed Challenge!"
-
-# #Evento que adiciona um novo desafio Periodico.
-# #Deve enviar: Nome do Desafio Periodico a ser adicionado (string)
-# @app.route('/newPeriodicChallenge' , methods=['POST'])
-# def newPeriodicChallenge():
-#     content = request.json
-#     print(content)
-#     socketio.emit("newPeriodicChallenge",content)
-#     return "New Periodic Challenge!"
-
-
-
-
-# #Evento que informa se o atual desafio Fixo foi cumprido ou nao.Pagina usa essa informaçao para decrementar
-# #uma vida do player caso ele tenha errado.
-# #Deve enviar: True se acertou e False se errou (bool)
-# @app.route('/correctFixedChallenge', methods=['POST'])
-# def correctFixedChallenge():
-#     content = request.json
-#     print(content)
-#     socketio.emit("correctFixedChallenge", content)
-#     return "Fixed Challenge Corrected"
-
-
-# #Evento que informa que o player nao cumpriu um dos desafios periodicos.Pagina usa essa informaçao para decrementar uma vida do player.
-# #Deve enviar: Numero do desafio que nao foi realizado (inteiro entre 0 e numDesafiosPeriodicos-1) 
-# @app.route('/correctPeriodicChallenge', methods=['POST'])
-# def correctPeriodicChallenge():
-#     content = request.json
-#     socketio.emit("correctPeriodicChallenge", content)
-#     return "Periodic Challenge Corrected"
-
-
-
-# #Evento que informa o fim do jogo. Ao receber esse evento, a pagina para o timer e exibe uma mensagem de vitoria/derrota
-# #Deve enviar: True se venceu o jogo ou False se perdeu (bool)
-# @app.route('/gameOver', methods=['POST'])
-# def gameOver():
-#     content = request.json
-#     socketio.emit("gameOver",content)
-#     return "Game Over"
 
 @app.route('/<string:socketChannel>', methods=['POST'])
 def gameOver(socketChannel):

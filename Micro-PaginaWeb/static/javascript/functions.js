@@ -7,8 +7,8 @@ var imageWidth = 60;
 
 function restartChallenges()
 {
-    sound.autoplay = true;
     sound = document.getElementById("start");
+    sound.autoplay = true;
     promise = sound.play();
     if (promise !== undefined) {
         promise.then(_ => {
@@ -21,8 +21,11 @@ function restartChallenges()
     var lifesMessage = document.getElementById("hearts");
     numberLifes= 3;
     lifesMessage.innerHTML = "♥ ♥ ♥ ";
-    lifesMessage.style.color = "red";
-	var fixedChallenges = document.getElementById("fixedChallenges");
+    lifesMessage.style.color = "red";    
+}
+
+function clearChallenges(){
+    var fixedChallenges = document.getElementById("fixedChallenges");
 	while (fixedChallenges.firstChild) 
 	{
 		fixedChallenges.firstChild.remove();
@@ -32,7 +35,6 @@ function restartChallenges()
 	{
 		periodicChallenges.firstChild.remove();
 	}
-    
 }
 
 function createNewFixedChallenge(challengeName,wireList)
@@ -110,7 +112,7 @@ function createNewFixedChallenge(challengeName,wireList)
 
     }
 
-    newFixedChallenge.style.fontSize="40px";
+    newFixedChallenge.style.fontSize="30px";
     newFixedChallenge.style.fontFamily="Roboto";
 
     newFixedChallenge.id=challengeName;
@@ -147,7 +149,7 @@ function createNewPeriodicChallenge(challengeName,params)
        
     }
     newPeriodicChallenge.style.fontFamily="Roboto"
-    newPeriodicChallenge.style.fontSize="40px";
+    newPeriodicChallenge.style.fontSize="30px";
     challengeImage.height = imageHeight;
     challengeImage.width = imageWidth;
     additionalImage.height = imageHeight;
@@ -260,6 +262,7 @@ function gameOver(hasWon)
             // Autoplay was prevented.
         });
     }
+    clearChallenges()
 }
 
 function challengeCleared(challengeName)

@@ -70,16 +70,17 @@ function createNewFixedChallenge(challengeName,wireList)
 
         newFixedChallenge.innerHTML = "Coloque os fios na ordem abaixo e aperte o botão para confirmar   ";
         newFixedChallenge.appendChild(document.createElement("br"));
-        newFixedChallenge.appendChild(randomSquare1);
         newFixedChallenge.appendChild(fixedSquare1);
+        newFixedChallenge.appendChild(randomSquare1);
         newFixedChallenge.appendChild(document.createElement("br"));
 
-        newFixedChallenge.appendChild(randomSquare2);
         newFixedChallenge.appendChild(fixedSquare2);
+        newFixedChallenge.appendChild(randomSquare2);
         newFixedChallenge.appendChild(document.createElement("br"));
 
-        newFixedChallenge.appendChild(randomSquare3);
         newFixedChallenge.appendChild(fixedSquare3);
+        newFixedChallenge.appendChild(randomSquare3);
+        
 
 
     }
@@ -99,7 +100,7 @@ function createNewFixedChallenge(challengeName,wireList)
 
     }
 
-    newFixedChallenge.style.fontSize="20px";
+    newFixedChallenge.style.fontSize="40px";
     newFixedChallenge.style.fontFamily="Roboto";
 
     newFixedChallenge.id=challengeName;
@@ -136,7 +137,7 @@ function createNewPeriodicChallenge(challengeName,params)
        
     }
     newPeriodicChallenge.style.fontFamily="Roboto"
-    newPeriodicChallenge.style.fontSize="20px";
+    newPeriodicChallenge.style.fontSize="40px";
     challengeImage.height = imageHeight;
     challengeImage.width = imageWidth;
     additionalImage.height = imageHeight;

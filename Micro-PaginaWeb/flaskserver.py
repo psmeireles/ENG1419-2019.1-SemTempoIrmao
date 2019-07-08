@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 
 from flask import Flask, render_template, request
 from flask_socketio import SocketIO,emit
@@ -34,7 +33,7 @@ def history():
             seconds = str(challenge["time_issued"]["seconds"]).zfill(2)
             challenge["time_issued"] = minutes + ':' + seconds
         if(lastResult["finished"]):
-            lastGame["finished"] = "Vitoria"
+            lastGame["finished"] = "Vitória"
         else:
             lastGame["finished"] = "Derrota"
     
@@ -50,21 +49,21 @@ def history():
             newGame["time"] =  minutes + ':' + seconds
             for challenge in result["challenges"]:
                 if(challenge["name"] == "wires"):
-                    trueChallengeName = "Conexao de Fios"
+                    trueChallengeName = "Conexão de Fios"
                 elif(challenge["name"] == "distance"):
-                    trueChallengeName = "Manter distancia"
+                    trueChallengeName = "Manter distância"
                 elif(challenge["name"] == "genius"):
                     trueChallengeName = "Genius"
                 elif(challenge["name"] == "light"):
                     trueChallengeName = "Alterar Luminosidade"
                 elif(challenge["name"] == "countdown"):
-                    trueChallengeName = "Apertar Botao"
+                    trueChallengeName = "Apertar Botão"
                 challengeNames = challengeNames + trueChallengeName+','
             challengeNames=challengeNames[:-1]
             newGame["challenges"] = challengeNames
             challengeNames = ""
             if(result["finished"]):
-                newGame["finished"] = "Vitoria"
+                newGame["finished"] = "Vitória"
             else:
                 newGame["finished"] = "Derrota"
             games.append(newGame)

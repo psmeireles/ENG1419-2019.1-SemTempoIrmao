@@ -7,6 +7,17 @@ var imageWidth = 60;
 
 function restartChallenges()
 {
+    sound.autoplay = true;
+    sound = document.getElementById("start");
+    promise = sound.play();
+    if (promise !== undefined) {
+        promise.then(_ => {
+            // Autoplay started!
+        }).catch(error => {
+            console.log("Audio not started")
+            // Autoplay was prevented.
+        });
+    }
     var lifesMessage = document.getElementById("hearts");
     numberLifes= 3;
     lifesMessage.innerHTML = "♥ ♥ ♥ ";

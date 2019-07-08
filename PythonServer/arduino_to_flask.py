@@ -4,6 +4,7 @@ from requests import *
 from threading import Timer
 from serial_class import *
 from database_class import *
+from datetime import datetime
 
 random.seed(a=None)
 endereco = "http://127.0.0.1"
@@ -29,20 +30,20 @@ GENIUS_OPTIONS = ['1', '2', '3']
 GENIUS_ORDER = []
 CURRENT_PERIODICS = []
 DELTA_T = 120
-TIME_STARTED = 0
+TIME_STARTED = time.time()
 GOAL = 3
 COMPLETED_CHALLENGES = 0
 GAME_STARTED = False
 periodicTimer = None
 finishTimer = None
-gameData = {"time": {}, "challenges": [], "finished": False}
+gameData = {"date": "", "time": {}, "challenges": [], "finished": False}
 
 def generate_challenges(challenge_instance):
     global gameData
-    now = time.time()
+    time_issued = time.time()
     challenge = {
         "name": challenge_instance,
-        "time_issued": {"minutes": (now - TIME_STARTED)/60, "seconds": (now - TIME_STARTED)%60},
+        "time_issued": {"minutes": int((time_issued - TIME_STARTED)/60), "seconds": int((time_issued - TIME_STARTED)%60)},
         "params": [],
         "completed": False
     }
@@ -104,10 +105,11 @@ def finish_game(SERIAL_PORT, DATABASE_CLIENT):
     GAME_STARTED = False
     gameData['finished'] = COMPLETED_CHALLENGES == GOAL
     now = time.time()
-    gameData["time"] = {"minutes": (now-TIME_STARTED)/60, "seconds": (now-TIME_STARTED)%60}
-    #colecao.insert(gameData)
+    gameData["date"] = datetime.now()
+    gameData["time"] = {"minutes": int((now-TIME_STARTED)/60), "seconds": int((now-TIME_STARTED)%60)}
+    gameData.pop('_id', None)
     DATABASE_CLIENT.send(gameData)
-    gameData = {"time": {}, "challenges": [], "finished": False}
+    gameData = {"date": "", "time": {}, "challenges": [], "finished": False}
     response = post(endereco_end, json={"win": COMPLETED_CHALLENGES == GOAL})
     SERIAL_PORT.connect()
     reply_to_arduino = "end"
@@ -137,6 +139,7 @@ def read_from_arduino(SERIAL_PORT, DATABASE_CLIENT, HEARTS):
     global GAME_STARTED
     global COMPLETED_CHALLENGES
     global CURRENT_PERIODICS
+    global TIME_STARTED
     global periodicTimer
     global finishTimer
     global gameData
@@ -180,10 +183,11 @@ def read_from_arduino(SERIAL_PORT, DATABASE_CLIENT, HEARTS):
                     finishTimer.cancel()
                     gameData['finished'] = False
                     now = time.time()
-                    gameData["time"] = {"minutes": (now-TIME_STARTED)/60, "seconds": (now-TIME_STARTED)%60}
-                    #colecao.insert(gameData)
+                    gameData["time"] = {"minutes": int((now-TIME_STARTED)/60), "seconds": int((now-TIME_STARTED)%60)}
+                    gameData["date"] = datetime.now()
+                    gameData.pop('_id', None)
                     DATABASE_CLIENT.send(gameData)
-                    gameData = {"time": {}, "challenges": [], "finished": False}
+                    gameData = {"date": "", "time": {}, "challenges": [], "finished": False}
                     reply_to_arduino = "end"
                     print(reply_to_arduino)
                     response = post(endereco_end, json={"win": False})
@@ -212,9 +216,11 @@ def read_from_arduino(SERIAL_PORT, DATABASE_CLIENT, HEARTS):
                     if  COMPLETED_CHALLENGES == GOAL:
                         GAME_STARTED = False
                         gameData['finished'] = True
-                        now = time.time()
-                        gameData["time"] = {"minutes": (now-TIME_STARTED)/60, "seconds": (now-TIME_STARTED)%60}
-                        #colecao.insert(gameData)
+                        time_finished = time.time()
+                        gameData["time"] = {"minutes": int((time_finished-TIME_STARTED)/60), "seconds": int((time_finished-TIME_STARTED)%60)}
+                        gameData["date"] = datetime.now()
+                        gameData.pop('_id', None)
+                        finishTimer.cancel()
                         DATABASE_CLIENT.send(gameData)
                         gameData = {"time": {}, "challenges": [], "finished": False}
                         response = post(endereco_end, json={"win": True})
@@ -243,10 +249,12 @@ def read_from_arduino(SERIAL_PORT, DATABASE_CLIENT, HEARTS):
                     periodicTimer.cancel()
                     finishTimer.cancel()
                     gameData['finished'] = False
-                    now = time.time()
-                    gameData["time"] = {"minutes": (now-TIME_STARTED)/60, "seconds": (now-TIME_STARTED)%60}
-                    #colecao.insert(gameData)
+                    time_lost = time.time()
+                    gameData["time"] = {"minutes": int((time_lost-TIME_STARTED)/60), "seconds": int((time_lost-TIME_STARTED)%60)}
+                    gameData["date"] = datetime.now()
+                    gameData.pop('_id', None)
                     DATABASE_CLIENT.send(gameData)
+                    gameData = {"date": "", "time": {}, "challenges": [], "finished": False}
                     reply_to_arduino = "end"
                     print(reply_to_arduino)
                     response = post(endereco_end, json={"win": False})
@@ -272,6 +280,7 @@ def main():
     HEARTS = 3
     serial_port = serial_client()
     db_client = database_client()
+    db_client.connect()
     global GAME_STARTED
     GAME_STARTED = True
     return read_from_arduino(serial_port, db_client, HEARTS)

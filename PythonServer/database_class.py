@@ -3,10 +3,10 @@ from pymongo import MongoClient, ASCENDING, DESCENDING
 class database_client:
 
     def __init__(self):
-        self.IP_HOST = "192.168.215.164"
+        self.IP_HOST = "localhost"
         self.PORT = 27017
-        self.DATABASE_NAME = "ENG1419-G2"
-        self.COLLECTION_NAME = "SemTempoIrmao"
+        self.DATABASE_NAME = "SemTempoIrmao"
+        self.COLLECTION_NAME = "Games"
         self.CLIENT= None
         self.DATABASE = None
         self.COLLECTION= None

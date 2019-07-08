@@ -169,7 +169,7 @@ def read_from_arduino(SERIAL_PORT, DATABASE_CLIENT, HEARTS):
                 response = post(endereco_start, json=dados)
                 finishTimer = Timer(DELTA_T, finish_game, args=[SERIAL_PORT,DATABASE_CLIENT],)
                 finishTimer.start()
-                periodicTimer = Timer(5, periodic_generator, args=[SERIAL_PORT,])
+                periodicTimer = Timer(30, periodic_generator, args=[SERIAL_PORT,])
                 periodicTimer.start()
                 SERIAL_PORT.write(challenge)
                 print(challenge)

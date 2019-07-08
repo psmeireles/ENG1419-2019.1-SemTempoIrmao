@@ -15,32 +15,47 @@ data = {
     "challenges": [
         {
             "name": "wires",
-            "params": ["2","3","1"],
-            "time_issued": "20",
+            "params": [2,3,1],
+            "time_issued": {
+                "minutes": 2,
+                "seconds": 00
+            },
             "completed": False
         },
         {
             "name": "genius",
-            "params": ["20","30","10"],
-            "time_issued": "10",
+            "params": [2,3,1],
+            "time_issued": {
+                "minutes": 2,
+                "seconds": 00
+            },
             "completed": True
         },
         {
             "name": "distance",
-            "params": ["20","40","10"],
-            "time_issued": "25",
+            "params": [10,30,10],
+            "time_issued": {
+                "minutes": 1,
+                "seconds": 30
+            },
             "completed": True
         },
         {
             "name": "light",
-            "params": ["20","30","10"],
-            "time_issued": "80",
+            "params": [10,30,10],
+            "time_issued": {
+                "minutes": 1,
+                "seconds": 00
+            },
             "completed": True
         },
         {
             "name": "countdown",
-            "params": ["20","30"],
-            "time_issued": "20",
+            "params": [10,20],
+            "time_issued": {
+                "minutes": 0,
+                "seconds": 30
+            },
             "completed": False
         }
     ],
@@ -53,3 +68,4 @@ colecao.insert_one(data)
 
 #apagar
 #colecao.delete_many( { } )
+

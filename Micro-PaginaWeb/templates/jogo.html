@@ -18,16 +18,18 @@
 		<audio id="victory">
 				<source src="static/sounds/victory.mp3" type="audio/mpeg">
 		</audio>
-      	<h2 id="logoJogo" style=" margin-bottom: -55px;" >Sem tempo, Irmao!</h2>
+		  <h2 id="logoJogo" style=" margin-bottom: -55px;" >Sem tempo, Irmao!</h2>
+		  <a id ="previousGames" class = "button"  href="/previousGames" 
+		  	 onmouseover="changeButtonColor(true,'previousGames')" onmouseout="changeButtonColor(false,'previousGames')">Jogos Passados</a>
 		<h3 style="  text-align:center" >Tempo Restante</h3>
         <h1 id="clock" style="display: flex">02:00</h1>
 
-		  <!-- <h2 id="textLifes" style="color: white;text-align:center; font-size:20px" >Vidas: <span id="hearts" style="color: red"> ♥ ♥ ♥ </span></h2>  -->
+		  
 		<h2 style="text-align:center; font-size:20px;font-family: Game;color: white" id="hearts" > Aperte o botão para começar! </h2> 
 
       	<div class="container">
       		<div class="row">
-        		<div class="col"  style="  text-align:center; left: -125px ;margin-top:-35px;">
+        		<div class="col"  style="text-align:center; left: -145px ;margin-top:-35px;">
             		<br>
           			<h3 style="font-size: 20px; "> Desafios Fixos: </h3>
 					<div id="fixedChallenges">
@@ -35,7 +37,7 @@
 					</div>
 				</div>
     
-       			<div class="col" style=" text-align:center; left: 120px ;margin-top:-35px" >
+       			<div class="col" style=" text-align:center; left: 100px ;margin-top:-35px" >
             		<br>
 					<h3 style="font-size: 20px; ">Desafios Periódicos:</h3>
 					<div id="periodicChallenges">

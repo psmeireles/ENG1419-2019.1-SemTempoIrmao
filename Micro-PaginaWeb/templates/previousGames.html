@@ -11,6 +11,8 @@
 	</head>
 
 	<body style="background-color: black;color: white ;font-family:Roboto;text-align: center;">
+		<a id ="back" href="/" class ="button"  
+		onmouseover="changeButtonColor(true,'back')" onmouseout="changeButtonColor(false,'back')">Voltar</a>
 		<br>
 		<h2  style=" font-family: 'Game'">Jogos anteriores</h2>
 		<div class="container">
@@ -48,7 +50,7 @@
 							<h6> Duração: {{ challenge.params[1] }} segundos </h6> 
 
 						{% endif %}
-						<h6> Tempo que ficou ativo durante o jogo: {{ challenge.time_issued }} segundos </h6> 
+						<h6> Tempo que o desafio apareceu: {{ challenge.time_issued }} </h6> 
 						{% if challenge.completed == True %}
 							<h6> Status do desafio: Completo </h6> <br> 
 						{% elif challenge.completed == False %}
@@ -90,6 +92,7 @@
 					<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
 					<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
 					<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+					<script type="text/javascript" src="static/javascript/functions.js"></script>
 		</footer>
 
 	</body>

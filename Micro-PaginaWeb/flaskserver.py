@@ -28,6 +28,10 @@ def history():
         seconds = str(lastResult["time"]["seconds"]).zfill(2)
         lastGame["time"] =  minutes + ':' + seconds
         lastGame["challenges"] = lastResult["challenges"]
+        for challenge in lastGame["challenges"]:
+            minutes = str(challenge["time_issued"]["minutes"]).zfill(2)
+            seconds = str(challenge["time_issued"]["seconds"]).zfill(2)
+            challenge["time_issued"] = minutes + ':' + seconds
         if(lastResult["finished"]):
             lastGame["finished"] = "Vitória"
         else:

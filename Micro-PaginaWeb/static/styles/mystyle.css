@@ -38,3 +38,27 @@ h3,h4
   width: 30px;
   display: inline-block
 }
+
+.button
+{
+  
+  color: white;
+  position: absolute;
+  font-family: Game
+}
+
+#previousGames
+{
+  text-decoration:none; 
+  font-size:40px;
+  top:110px;
+  left:75px 
+}
+
+#back
+{
+  text-decoration:none; 
+  font-size:20px;
+  top:25px;
+  left: 50px
+}

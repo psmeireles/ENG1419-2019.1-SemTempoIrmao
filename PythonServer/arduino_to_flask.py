@@ -132,7 +132,7 @@ def periodic_generator(SERIAL_PORT):
             response = post(endereco_new_periodic_challenge, json=dados)
             print(challenge)
             SERIAL_PORT.write(challenge)
-        periodicTimer = Timer(20, periodic_generator, args = [SERIAL_PORT])
+        periodicTimer = Timer(20 - 5 * COMPLETED_CHALLENGES, periodic_generator, args = [SERIAL_PORT])
         periodicTimer.start()
 
 def read_from_arduino(SERIAL_PORT, DATABASE_CLIENT, HEARTS):
@@ -169,7 +169,7 @@ def read_from_arduino(SERIAL_PORT, DATABASE_CLIENT, HEARTS):
                 response = post(endereco_start, json=dados)
                 finishTimer = Timer(DELTA_T, finish_game, args=[SERIAL_PORT,DATABASE_CLIENT],)
                 finishTimer.start()
-                periodicTimer = Timer(30, periodic_generator, args=[SERIAL_PORT,])
+                periodicTimer = Timer(20, periodic_generator, args=[SERIAL_PORT,])
                 periodicTimer.start()
                 SERIAL_PORT.write(challenge)
                 print(challenge)

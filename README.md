@@ -26,9 +26,9 @@ If the bomb timer reaches 0 or the player makes 3 failures in any of the challen
 Good luck!
 
 ## Circuit schematic
-The circuit schematic can be found in the file [SemTempoIrmao.fzz](SemTempoIrmao.fzz).
+The circuit schematic can be found in the file [Circuit/SemTempoIrmao.fzz](Circuit/SemTempoIrmao.fzz).
 
-![](SemTempoIrmao.jpg)
+![](Circuit/SemTempoIrmao.jpg)
 
 ## Demo
 Coming Soon

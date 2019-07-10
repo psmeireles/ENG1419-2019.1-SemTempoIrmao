@@ -25,10 +25,19 @@ If the bomb timer reaches 0 or the player makes 3 failures in any of the challen
 
 Good luck!
 
+## How to run
+First upload the Arduino sketch to the Arduino Mega. Then start the database by running `mongo` from a terminal. Finally, from the base folder of this repository run the following commands in different terminals:
+```python
+  python PythonServer/arduino_to_flask.py
+  
+  python Micro-PaginaWeb/flaskserver.py
+```
+In your browser go to `localhost:5000` and press `Start` in the Arduino.
+
 ## Circuit schematic
 The circuit schematic can be found in the file [Circuit/SemTempoIrmao.fzz](Circuit/SemTempoIrmao.fzz).
 
 ![](Circuit/SemTempoIrmao.jpg)
 
-## Demo
-Coming Soon
+## Demo (in Portuguese)
+[![](http://img.youtube.com/vi/SaZhI4S7CrI/0.jpg)](http://www.youtube.com/watch?v=SaZhI4S7CrI "Demo")
